@@ -1,0 +1,3424 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị viên - Healthy System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #9c27b0;
+            --secondary-color: #673ab7;
+            --success-color: #52c41a;
+            --warning-color: #fa8c16;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        .stat-card.users { border-left-color: #9c27b0; }
+        .stat-card.appointments { border-left-color: #ff9800; }
+        .stat-card.reminders { border-left-color: #f44336; }
+        .stat-card.patients { border-left-color: #2196f3; }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: #8c8c8c;
+            font-size: 0.9rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-tabs .nav-link {
+            color: #595959;
+            border: none;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            background: transparent;
+        }
+
+        .data-table {
+            width: 100%;
+        }
+
+        .data-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-bottom: 2px solid #e8e8e8;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .data-table tr:hover {
+            background: #fafafa;
+        }
+
+        .badge-urgent {
+            background: #ff4d4f;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .badge-soon {
+            background: #fa8c16;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .badge-normal {
+            background: #52c41a;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(156,39,176,0.3);
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .search-box {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .patient-info-card {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .history-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .print-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #8c8c8c;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .reminder-message {
+            background: #f0f0f0;
+            padding: 1rem;
+            border-radius: 6px;
+            white-space: pre-line;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Profile Image Upload Styles */
+        .staff-image-preview-container {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .staff-image-preview-img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+
+        .image-upload-hint {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .page-header {
+                background: none !important;
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="page-header no-print">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-user-shield me-2"></i>
+                        Quản trị viên
+                    </h1>
+                    <p class="mb-0 mt-2 opacity-75" id="welcomeText">Quản lý hệ thống và nhắc lịch hẹn</p>
+                </div>
+                <button class="btn btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    Đăng xuất
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Statistics -->
+        <div class="row no-print">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card users">
+                    <div class="stat-icon" style="color: #9c27b0;">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Tổng người dùng</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card appointments">
+                    <div class="stat-icon" style="color: #ff9800;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value" id="todayAppointments">0</div>
+                    <div class="stat-label">Lịch hẹn hôm nay</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card reminders">
+                    <div class="stat-icon" style="color: #f44336;">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="stat-value" id="pendingReminders">0</div>
+                    <div class="stat-label">Nhắc nhở chờ gửi</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card patients">
+                    <div class="stat-icon" style="color: #2196f3;">
+                        <i class="fas fa-user-injured"></i>
+                    </div>
+                    <div class="stat-value" id="totalPatients">0</div>
+                    <div class="stat-label">Tổng bệnh nhân</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="content-card no-print">
+            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="reminders-tab" data-bs-toggle="tab" data-bs-target="#reminders" type="button">
+                        <i class="fas fa-bell me-2"></i>Nhắc lịch hẹn
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="print-tab" data-bs-toggle="tab" data-bs-target="#print" type="button">
+                        <i class="fas fa-print me-2"></i>In lịch sử BN
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">
+                        <i class="fas fa-users me-2"></i>Người dùng
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="create-account-tab" data-bs-toggle="tab" data-bs-target="#create-account" type="button">
+                        <i class="fas fa-user-plus me-2"></i>Tạo tài khoản
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="schedules-tab" data-bs-toggle="tab" data-bs-target="#schedules" type="button">
+                        <i class="fas fa-calendar-alt me-2"></i>Lịch làm việc BS
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="health-news-tab" data-bs-toggle="tab" data-bs-target="#health-news" type="button">
+                        <i class="fas fa-newspaper me-2"></i>Tin tức Y tế
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="service-prices-tab" data-bs-toggle="tab" data-bs-target="#service-prices" type="button">
+                        <i class="fas fa-dollar-sign me-2"></i>Bảng giá DV
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3" id="adminTabsContent">
+                <!-- Reminders Tab -->
+                <div class="tab-pane fade show active" id="reminders" role="tabpanel">
+                    <div class="search-box">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small">Thời gian tìm kiếm</label>
+                                <select class="form-select" id="reminderHours">
+                                    <option value="1">1 giờ tới</option>
+                                    <option value="4">4 giờ tới</option>
+                                    <option value="24" selected>24 giờ tới</option>
+                                    <option value="48">48 giờ tới</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">&nbsp;</label>
+                                <button class="btn btn-primary-custom w-100" onclick="loadReminders()">
+                                    <i class="fas fa-search me-1"></i> Tìm lịch hẹn
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">&nbsp;</label>
+                                <button class="btn btn-success w-100" onclick="sendSelectedReminders()" id="sendRemindersBtn" disabled>
+                                    <i class="fas fa-paper-plane me-1"></i> Gửi nhắc nhở
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="remindersSummary" class="mb-3"></div>
+                    <div id="remindersContainer">
+                        <div class="text-center py-4">
+                            <p class="text-muted">Chọn khoảng thời gian và nhấn Tìm lịch hẹn</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Print Medical History Tab -->
+                <div class="tab-pane fade" id="print" role="tabpanel">
+                    <div class="search-box">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label small">Tìm bệnh nhân</label>
+                                <input type="text" class="form-control" id="patientSearch" placeholder="Nhập tên, số điện thoại hoặc email">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">&nbsp;</label>
+                                <button class="btn btn-primary-custom w-100" onclick="searchPatients()">
+                                    <i class="fas fa-search me-1"></i> Tìm kiếm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="patientSearchResults"></div>
+                </div>
+
+                <!-- Users Tab -->
+                <div class="tab-pane fade" id="users" role="tabpanel">
+                    <div class="search-box">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small">Vai trò</label>
+                                <select class="form-select" id="userRole">
+                                    <option value="">Tất cả</option>
+                                    <option value="doctor">Bác sĩ</option>
+                                    <option value="lab">Bác sĩ xét nghiệm</option>
+                                    <option value="reception">Lễ tân</option>
+                                    <option value="accountant">Kế toán</option>
+                                    <option value="admin">Quản trị</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">Trạng thái</label>
+                                <select class="form-select" id="userStatus">
+                                    <option value="">Tất cả</option>
+                                    <option value="true">Hoạt động</option>
+                                    <option value="false">Vô hiệu hóa</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">&nbsp;</label>
+                                <button class="btn btn-primary-custom w-100" onclick="loadUsers()">
+                                    <i class="fas fa-search me-1"></i> Tìm kiếm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="usersContainer">
+                        <div class="text-center py-4">
+                            <p class="text-muted">Nhấn Tìm kiếm để xem danh sách người dùng</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Account Tab (Sprint 10 - New Feature) -->
+                <div class="tab-pane fade" id="create-account" role="tabpanel">
+                    <div class="section-title">
+                        <i class="fas fa-user-plus"></i>
+                        Tạo tài khoản nhân viên mới
+                    </div>
+
+                    <form id="createStaffForm" onsubmit="createStaffAccount(event)">
+                        <div class="row">
+                            <!-- Account Type Selection -->
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Loại tài khoản <span class="text-danger">*</span></label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="accountType" id="typedoctor" value="doctor" checked onchange="toggleDoctorFields()">
+                                    <label class="btn btn-outline-primary" for="typedoctor">
+                                        <i class="fas fa-user-md me-2"></i>Bác sĩ
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="accountType" id="typereception" value="reception" onchange="toggleDoctorFields()">
+                                    <label class="btn btn-outline-primary" for="typereception">
+                                        <i class="fas fa-user-tie me-2"></i>Tiếp tân
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Basic Information -->
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">Họ <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="firstName" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Tên <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="lastName" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" required>
+                                <small class="text-muted">Email sẽ được dùng để đăng nhập</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" required pattern="[0-9]{10,11}">
+                            </div>
+
+                            <!-- Profile Image Upload -->
+                            <div class="col-12 mb-3">
+                                <label for="staffProfileImage" class="form-label">
+                                    <i class="fas fa-image me-1"></i> Ảnh đại diện
+                                </label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="staffProfileImage" 
+                                       accept="image/jpeg,image/jpg,image/png,image/gif">
+                                <div class="image-upload-hint">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle"></i> 
+                                        Tối đa 5MB. Định dạng: JPG, PNG, GIF
+                                    </small>
+                                </div>
+                                
+                                <!-- Image Preview -->
+                                <div id="staffImagePreview" class="staff-image-preview-container" style="display: none;">
+                                    <img id="staffImagePreviewImg" class="staff-image-preview-img" alt="Preview">
+                                    <div class="mt-2">
+                                        <small class="text-muted">Xem trước ảnh đại diện</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="password" required minlength="6">
+                                <small class="text-muted">Tối thiểu 6 ký tự</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="confirmPassword" class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="confirmPassword" required minlength="6">
+                            </div>
+
+                            <!-- Doctor-specific fields -->
+                            <div id="doctorFields">
+                                <div class="col-12">
+                                    <hr>
+                                    <h6 class="text-primary mb-3"><i class="fas fa-stethoscope me-2"></i>Thông tin bác sĩ</h6>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="specialization" class="form-label">Chuyên khoa</label>
+                                    <select class="form-select" id="specialization">
+                                        <option value="Tổng quát">Tổng quát</option>
+                                        <option value="Nội khoa">Nội khoa</option>
+                                        <option value="Ngoại khoa">Ngoại khoa</option>
+                                        <option value="Nhi khoa">Nhi khoa</option>
+                                        <option value="Sản phụ khoa">Sản phụ khoa</option>
+                                        <option value="Da liễu">Da liễu</option>
+                                        <option value="Tai mũi họng">Tai mũi họng</option>
+                                        <option value="Mắt">Mắt</option>
+                                        <option value="Răng hàm mặt">Răng hàm mặt</option>
+                                        <option value="Tim mạch">Tim mạch</option>
+                                        <option value="Thần kinh">Thần kinh</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="licenseNumber" class="form-label">Số chứng chỉ hành nghề</label>
+                                    <input type="text" class="form-control" id="licenseNumber" placeholder="Tự động tạo nếu để trống">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="dateOfBirth" class="form-label">Ngày sinh</label>
+                                    <input type="date" class="form-control" id="dateOfBirth">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="gender" class="form-label">Giới tính</label>
+                                    <select class="form-select" id="gender">
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <label for="address" class="form-label">Địa chỉ</label>
+                                    <textarea class="form-control" id="address" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn btn-primary-custom btn-lg">
+                                    <i class="fas fa-save me-2"></i>Tạo tài khoản
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-lg ms-2" onclick="resetCreateStaffForm()">
+                                    <i class="fas fa-redo me-2"></i>Làm mới
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Success/Error Message -->
+                    <div id="createAccountMessage" class="mt-3" style="display: none;"></div>
+                </div>
+
+                <!-- Doctor Schedules Tab -->
+                <div class="tab-pane fade" id="schedules" role="tabpanel">
+                    <div class="search-box">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small">Chọn bác sĩ</label>
+                                <select class="form-select" id="doctorSelect" onchange="loadDoctorSchedules()">
+                                    <option value="">-- Chọn bác sĩ --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">&nbsp;</label>
+                                <button class="btn btn-success w-100" onclick="showAddScheduleModal()">
+                                    <i class="fas fa-plus me-1"></i> Thêm lịch làm việc
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Schedule View -->
+                    <div id="scheduleCalendar" class="mb-4">
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-alt" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p class="text-muted mt-2">Chọn bác sĩ để xem lịch làm việc</p>
+                        </div>
+                    </div>
+
+                    <!-- Schedule List View -->
+                    <div id="scheduleListContainer"></div>
+                </div>
+                <!-- End Schedules Tab -->
+
+<!-- Health News Tab -->
+<div class="tab-pane fade" id="health-news" role="tabpanel">
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Quản lý Tin tức Y tế</h4>
+            <p class="text-muted mb-0">Tạo và quản lý các bài viết tin tức sức khỏe</p>
+        </div>
+        <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#healthNewsModal" onclick="resetHealthNewsForm()">
+            <i class="fas fa-plus me-2"></i>Tạo tin tức mới
+        </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label class="form-label">Lọc theo danh mục</label>
+            <select class="form-select" id="filterNewsCategory" onchange="loadHealthNews()">
+                <option value="">Tất cả danh mục</option>
+                <option value="Sức khỏe tổng quát">Sức khỏe tổng quát</option>
+                <option value="Dinh dưỡng">Dinh dưỡng</option>
+                <option value="Bệnh học">Bệnh học</option>
+                <option value="Phòng ngừa">Phòng ngừa</option>
+                <option value="Sống khỏe">Sống khỏe</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Trạng thái</label>
+            <select class="form-select" id="filterNewsPublished" onchange="loadHealthNews()">
+                <option value="">Tất cả</option>
+                <option value="true">Đã xuất bản</option>
+                <option value="false">Nháp</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Nổi bật</label>
+            <select class="form-select" id="filterNewsFeatured" onchange="loadHealthNews()">
+                <option value="">Tất cả</option>
+                <option value="true">Nổi bật</option>
+                <option value="false">Thường</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- News List -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Tiêu đề</th>
+                            <th>Danh mục</th>
+                            <th>Tác giả</th>
+                            <th>Lượt xem</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="healthNewsList">
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Đang tải...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <nav id="newsPagination" class="mt-3">
+                <ul class="pagination justify-content-center mb-0">
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Health News Modal -->
+<div class="modal fade" id="healthNewsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="healthNewsModalTitle">Tạo tin tức mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="healthNewsForm">
+                    <input type="hidden" id="newsId">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tiêu đề <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newsTitle" required maxlength="200">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tóm tắt <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="newsSummary" rows="2" required maxlength="500"></textarea>
+                        <small class="text-muted">Tối đa 500 ký tự</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="newsContent" rows="8" required maxlength="5000"></textarea>
+                        <small class="text-muted">Tối đa 5000 ký tự</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Hình ảnh</label>
+                            <div class="input-group mb-2">
+                                <input type="url" class="form-control" id="newsImageUrl" placeholder="https://example.com/image.jpg hoặc chọn ảnh từ máy">
+                                <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('newsImageFile').click()">
+                                    <i class="fas fa-upload me-1"></i>Chọn ảnh
+                                </button>
+                            </div>
+                            <input type="file" id="newsImageFile" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'news')">
+                            <div id="newsImagePreview" style="display: none;" class="mt-2">
+                                <img id="newsImagePreviewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid #dee2e6;">
+                                <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeImagePreview('news')">
+                                    <i class="fas fa-times"></i> Xóa ảnh
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Danh mục <span class="text-danger">*</span></label>
+                            <select class="form-select" id="newsCategory" required>
+                                <option value="">Chọn danh mục</option>
+                                <option value="Sức khỏe tổng quát">Sức khỏe tổng quát</option>
+                                <option value="Dinh dưỡng">Dinh dưỡng</option>
+                                <option value="Bệnh học">Bệnh học</option>
+                                <option value="Phòng ngừa">Phòng ngừa</option>
+                                <option value="Sống khỏe">Sống khỏe</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tác giả <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newsAuthor" required maxlength="100">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="newsIsFeatured">
+                                <label class="form-check-label" for="newsIsFeatured">
+                                    <i class="fas fa-star text-warning me-1"></i>Đánh dấu nổi bật
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="newsIsPublished">
+                                <label class="form-check-label" for="newsIsPublished">
+                                    <i class="fas fa-globe text-success me-1"></i>Xuất bản ngay
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Hủy
+                </button>
+                <button type="button" class="btn btn-primary-custom" onclick="saveHealthNews()">
+                    <i class="fas fa-save me-1"></i>Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Prices Tab -->
+<div class="tab-pane fade" id="service-prices" role="tabpanel">
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Quản lý Bảng giá Dịch vụ</h4>
+            <p class="text-muted mb-0">Cập nhật giá các dịch vụ khám và điều trị</p>
+        </div>
+        <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#servicePriceModal" onclick="resetServicePriceForm()">
+            <i class="fas fa-plus me-2"></i>Thêm dịch vụ mới
+        </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label class="form-label">Lọc theo danh mục</label>
+            <select class="form-select" id="filterPriceCategory" onchange="loadServicePrices()">
+                <option value="">Tất cả danh mục</option>
+                <option value="Khám bệnh">Khám bệnh</option>
+                <option value="Xét nghiệm">Xét nghiệm</option>
+                <option value="Chẩn đoán hình ảnh">Chẩn đoán hình ảnh</option>
+                <option value="Thủ thuật">Thủ thuật</option>
+                <option value="Phẫu thuật">Phẫu thuật</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Trạng thái</label>
+            <select class="form-select" id="filterPriceActive" onchange="loadServicePrices()">
+                <option value="">Tất cả</option>
+                <option value="true">Đang áp dụng</option>
+                <option value="false">Tạm ngưng</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Service Prices List -->
+    <div id="servicePricesList">
+        <div class="text-center py-3">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Service Price Modal -->
+<div class="modal fade" id="servicePriceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="servicePriceModalTitle">Thêm dịch vụ mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="servicePriceForm">
+                    <input type="hidden" id="priceId">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tên dịch vụ <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="priceServiceName" required maxlength="200">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Danh mục <span class="text-danger">*</span></label>
+                        <select class="form-select" id="priceCategory" required>
+                            <option value="">Chọn danh mục</option>
+                            <option value="Khám bệnh">Khám bệnh</option>
+                            <option value="Xét nghiệm">Xét nghiệm</option>
+                            <option value="Chẩn đoán hình ảnh">Chẩn đoán hình ảnh</option>
+                            <option value="Thủ thuật">Thủ thuật</option>
+                            <option value="Phẫu thuật">Phẫu thuật</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Giá <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="priceAmount" required min="0" step="1000">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Đơn vị</label>
+                            <input type="text" class="form-control" id="priceUnit" value="VNĐ" maxlength="20">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="priceDescription" rows="3" maxlength="500"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Thứ tự hiển thị</label>
+                        <input type="number" class="form-control" id="priceDisplayOrder" value="0" min="0">
+                        <small class="text-muted">Số nhỏ hơn sẽ hiển thị trước</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="priceIsActive" checked>
+                            <label class="form-check-label" for="priceIsActive">
+                                <i class="fas fa-check-circle text-success me-1"></i>Đang áp dụng
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Hủy
+                </button>
+                <button type="button" class="btn btn-primary-custom" onclick="saveServicePrice()">
+                    <i class="fas fa-save me-1"></i>Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Medical History Print View -->
+    <div id="printView" style="display: none;">
+        <div class="text-center mb-4">
+            <h2>LỊCH SỬ KHÁM BỆNH</h2>
+            <h4>PHÒNG KHÁM HEALTHY SYSTEM</h4>
+            <p>Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM | Điện thoại: (028) 1234 5678</p>
+        </div>
+        <div id="printContent"></div>
+    </div>
+
+    <!-- Add/Edit Schedule Modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+                    <h5 class="modal-title" id="scheduleModalTitle">
+                        <i class="fas fa-calendar-plus me-2"></i>Thêm lịch làm việc
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="scheduleId">
+                    <input type="hidden" id="scheduleDoctorId">
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Bác sĩ</strong></label>
+                        <input type="text" class="form-control" id="scheduleDoctorName" readonly>
+                    </div>
+
+                    <!-- Mode Selection -->
+                    <ul class="nav nav-tabs mb-3" id="scheduleModeTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="quick-tab" data-bs-toggle="tab" data-bs-target="#quick-mode" type="button">
+                                <i class="fas fa-bolt me-1"></i> Tạo nhanh cả tuần
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="custom-tab" data-bs-toggle="tab" data-bs-target="#custom-mode" type="button">
+                                <i class="fas fa-cog me-1"></i> Tùy chỉnh từng ngày
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="single-tab" data-bs-toggle="tab" data-bs-target="#single-mode" type="button">
+                                <i class="fas fa-plus me-1"></i> Thêm 1 ca làm việc
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="scheduleTabContent">
+                        <!-- Quick Mode: Weekly Template -->
+                        <div class="tab-pane fade show active" id="quick-mode">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Tạo lịch nhanh:</strong> Chọn mẫu ca làm việc và áp dụng cho nhiều ngày trong tuần
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Chọn mẫu ca làm việc</strong></label>
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <div class="card border-primary cursor-pointer shift-template" onclick="selectTemplate('morning')" data-template="morning">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-sun text-warning" style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Ca sáng</h6>
+                                                <small class="text-muted">8:00 - 12:00</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card border-primary cursor-pointer shift-template" onclick="selectTemplate('afternoon')" data-template="afternoon">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-cloud-sun text-info" style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Ca chiều</h6>
+                                                <small class="text-muted">13:30 - 17:30</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card border-primary cursor-pointer shift-template" onclick="selectTemplate('evening')" data-template="evening">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-moon text-primary" style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Ca tối</h6>
+                                                <small class="text-muted">18:00 - 21:00</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-primary cursor-pointer shift-template" onclick="selectTemplate('fullday')" data-template="fullday">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-calendar-day text-success" style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Cả ngày</h6>
+                                                <small class="text-muted">8:00 - 17:00</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-primary cursor-pointer shift-template" onclick="selectTemplate('custom-quick')" data-template="custom-quick">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-edit text-secondary" style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Tùy chỉnh</h6>
+                                                <small class="text-muted">Chọn giờ khác</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="customTimeQuick" style="display: none;">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Giờ bắt đầu</label>
+                                        <input type="time" class="form-control" id="quickStartTime" value="08:00">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Giờ kết thúc</label>
+                                        <input type="time" class="form-control" id="quickEndTime" value="12:00">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Chọn các ngày áp dụng</strong></label>
+                                <div class="row g-2">
+                                    <div class="col-md-3 col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="1" id="day1">
+                                            <label class="form-check-label" for="day1">Thứ Hai</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="2" id="day2">
+                                            <label class="form-check-label" for="day2">Thứ Ba</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="3" id="day3">
+                                            <label class="form-check-label" for="day3">Thứ Tư</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="4" id="day4">
+                                            <label class="form-check-label" for="day4">Thứ Năm</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="5" id="day5">
+                                            <label class="form-check-label" for="day5">Thứ Sáu</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="6" id="day6">
+                                            <label class="form-check-label" for="day6">Thứ Bảy</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="0" id="day0">
+                                            <label class="form-check-label" for="day0">Chủ Nhật</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="selectAllDays()">
+                                            <i class="fas fa-check-double me-1"></i> Chọn tất cả
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Weeks to repeat -->
+                                <div class="mb-3 mt-3">
+                                    <label class="form-label">Số tuần lặp lại</label>
+                                    <select class="form-select" id="weeksToRepeat">
+                                        <option value="1">1 tuần (chỉ tạo cho tuần này)</option>
+                                        <option value="2">2 tuần</option>
+                                        <option value="4" selected>4 tuần (1 tháng)</option>
+                                        <option value="8">8 tuần (2 tháng)</option>
+                                        <option value="12">12 tuần (3 tháng)</option>
+                                    </select>
+                                    <small class="text-muted">Hệ thống sẽ tự động tạo lịch lặp lại cho các tuần tiếp theo</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Số bệnh nhân tối đa/ca</label>
+                                <input type="number" class="form-control" id="quickMaxPatients" value="4" min="1" max="20">
+                                <small class="text-muted">Số lượng bệnh nhân có thể đăng ký trong 1 ca làm việc</small>
+                            </div>
+                        </div>
+
+                        <!-- Custom Mode: Day by Day -->
+                        <div class="tab-pane fade" id="custom-mode">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Tùy chỉnh từng ngày:</strong> Thiết lập ca làm việc khác nhau cho mỗi ngày trong tuần
+                            </div>
+
+                            <div id="customScheduleBuilder">
+                                <!-- Will be populated dynamically -->
+                            </div>
+
+                            <button class="btn btn-success btn-sm" onclick="addCustomShift()">
+                                <i class="fas fa-plus me-1"></i> Thêm ca làm việc
+                            </button>
+                        </div>
+
+                        <!-- Single Mode: Add One Shift -->
+                        <div class="tab-pane fade" id="single-mode">
+                            <div class="mb-3">
+                                <label class="form-label">Thứ trong tuần <span class="text-danger">*</span></label>
+                                <select class="form-select" id="scheduleDayOfWeek" required>
+                                    <option value="1">Thứ hai</option>
+                                    <option value="2">Thứ ba</option>
+                                    <option value="3">Thứ tư</option>
+                                    <option value="4">Thứ năm</option>
+                                    <option value="5">Thứ sáu</option>
+                                    <option value="6">Thứ bảy</option>
+                                    <option value="0">Chủ nhật</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Giờ bắt đầu <span class="text-danger">*</span></label>
+                                    <input type="time" class="form-control" id="scheduleStartTime" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Giờ kết thúc <span class="text-danger">*</span></label>
+                                    <input type="time" class="form-control" id="scheduleEndTime" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Số lượng bệnh nhân tối đa/ca</label>
+                                <input type="number" class="form-control" id="scheduleMaxAppointments" value="4" min="1" max="20">
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="scheduleIsAvailable" checked>
+                                    <label class="form-check-label" for="scheduleIsAvailable">
+                                        Đang hoạt động
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Hủy
+                    </button>
+                    <button type="button" class="btn btn-primary-custom" onclick="saveScheduleMain()">
+                        <i class="fas fa-save me-1"></i> <span id="saveButtonText">Lưu lịch</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .shift-template {
+            transition: all 0.3s ease;
+        }
+        .shift-template:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .shift-template.selected {
+            background-color: #e3f2fd;
+            border-color: #2196F3 !important;
+            border-width: 2px;
+        }
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        .custom-shift-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+        }
+        
+        /* Service Price Table Column Widths */
+        .service-price-table th:nth-child(1),
+        .service-price-table td:nth-child(1) {
+            width: 60px !important;
+            min-width: 60px !important;
+            max-width: 60px !important;
+        }
+        
+        .service-price-table th:nth-child(2),
+        .service-price-table td:nth-child(2) {
+            width: 25% !important;
+            min-width: 200px !important;
+        }
+        
+        .service-price-table th:nth-child(3),
+        .service-price-table td:nth-child(3) {
+            width: 15% !important;
+            min-width: 120px !important;
+        }
+        
+        .service-price-table th:nth-child(5),
+        .service-price-table td:nth-child(5) {
+            width: 130px !important;
+            min-width: 130px !important;
+            max-width: 130px !important;
+            text-align: center !important;
+        }
+        
+        .service-price-table th:nth-child(6),
+        .service-price-table td:nth-child(6) {
+            width: 100px !important;
+            min-width: 100px !important;
+            max-width: 100px !important;
+            text-align: center !important;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let selectedReminders = new Set();
+
+        // Check authentication
+        function checkAuth() {
+            // Try all possible token keys for compatibility
+            const token = localStorage.getItem('token') || 
+                         localStorage.getItem('authToken') ||
+                         localStorage.getItem('healthysystem_token');
+            
+            console.log('checkAuth: Looking for token...');
+            console.log('checkAuth: token found:', !!token);
+            
+            if (!token) {
+                console.log('checkAuth: No token found, redirecting to login');
+                window.location.href = 'login.html';
+                return null;
+            }
+
+            try {
+                console.log('checkAuth: Token found, verifying...');
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                console.log('checkAuth: Token payload:', payload);
+                
+                const roleClaim = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+                const role = roleClaim || payload.role;
+                console.log('checkAuth: User role:', role);
+                
+                if (role !== 'admin' && role !== 'Admin') {
+                    console.log('checkAuth: Not admin role, access denied');
+                    alert('Chỉ Quản trị viên mới có quyền truy cập trang này!');
+                    window.location.href = 'index.html';
+                    return null;
+                }
+                
+                console.log('checkAuth: Admin access granted');
+                const nameClaim = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || 
+                                 payload.name || 
+                                 payload.fullName;
+                if (nameClaim) {
+                    document.getElementById('welcomeText').textContent = `Xin chào, ${nameClaim}`;
+                }
+                
+                return token;
+            } catch (error) {
+                console.error('checkAuth: Invalid token:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('healthysystem_token');
+                window.location.href = 'login.html';
+                return null;
+            }
+        }
+
+        // Load dashboard
+        async function loadDashboard() {
+            const token = checkAuth();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load dashboard');
+
+                const result = await response.json();
+                const data = result.data;
+
+                document.getElementById('totalUsers').textContent = data.Users?.Total || data.users?.total || 0;
+                document.getElementById('todayAppointments').textContent = data.Appointments?.Today || data.appointments?.today || 0;
+                document.getElementById('pendingReminders').textContent = data.Appointments?.PendingReminders || data.appointments?.pendingReminders || 0;
+                document.getElementById('totalPatients').textContent = data.Users?.Patients || data.users?.patients || 0;
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Load reminders
+        async function loadReminders() {
+            const token = checkAuth();
+            if (!token) return;
+
+            const hours = document.getElementById('reminderHours').value;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/appointment-reminders?hoursAhead=${hours}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load reminders');
+
+                const result = await response.json();
+                const data = result.data;
+
+                displayRemindersSummary(data.Summary || data.summary);
+                displayReminders(data.Reminders || data.reminders);
+            } catch (error) {
+                console.error('Error loading reminders:', error);
+                alert('Không thể tải danh sách nhắc nhở');
+            }
+        }
+
+        // Display reminders summary
+        function displayRemindersSummary(summary) {
+            const html = `
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <div class="p-3 bg-light rounded">
+                            <small class="text-muted">Tổng lịch hẹn</small>
+                            <h5 class="mb-0">${summary.TotalReminders || summary.totalReminders || 0}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <div class="p-3 bg-danger bg-opacity-10 rounded">
+                            <small class="text-muted">Trong 1 giờ</small>
+                            <h5 class="mb-0 text-danger">${summary.Within1Hour || summary.within1Hour || 0}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <div class="p-3 bg-warning bg-opacity-10 rounded">
+                            <small class="text-muted">Trong 4 giờ</small>
+                            <h5 class="mb-0 text-warning">${summary.Within4Hours || summary.within4Hours || 0}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <div class="p-3 bg-success bg-opacity-10 rounded">
+                            <small class="text-muted">Trong 24 giờ</small>
+                            <h5 class="mb-0 text-success">${summary.Within24Hours || summary.within24Hours || 0}</h5>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('remindersSummary').innerHTML = html;
+        }
+
+        // Display reminders
+        function displayReminders(reminders) {
+            if (!reminders || reminders.length === 0) {
+                document.getElementById('remindersContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-check"></i>
+                        <h5>Không có lịch hẹn nào</h5>
+                        <p>Không có lịch hẹn nào trong khoảng thời gian này</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAllReminders" onchange="toggleSelectAll()"></th>
+                            <th>Thời gian</th>
+                            <th>Bệnh nhân</th>
+                            <th>Bác sĩ</th>
+                            <th>Liên hệ</th>
+                            <th>Còn lại</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            reminders.forEach(r => {
+                const apptDate = new Date(r.AppointmentDate || r.appointmentDate);
+                const hoursUntil = r.HoursUntil || r.hoursUntil || 0;
+                let urgencyBadge = '';
+                
+                if (hoursUntil <= 1) {
+                    urgencyBadge = '<span class="badge-urgent"><i class="fas fa-exclamation-triangle"></i> Khẩn cấp</span>';
+                } else if (hoursUntil <= 4) {
+                    urgencyBadge = '<span class="badge-soon"><i class="fas fa-clock"></i> Sắp đến</span>';
+                } else {
+                    urgencyBadge = '<span class="badge-normal"><i class="fas fa-check"></i> Bình thường</span>';
+                }
+
+                html += `
+                    <tr>
+                        <td><input type="checkbox" class="reminder-checkbox" value="${r.Id || r.id}" onchange="updateSendButton()"></td>
+                        <td>${apptDate.toLocaleString('vi-VN')}</td>
+                        <td><strong>${r.PatientName || r.patientName}</strong></td>
+                        <td>${r.DoctorName || r.doctorName}</td>
+                        <td>
+                            <small>${r.PatientPhone || r.patientPhone}</small><br>
+                            <small class="text-muted">${r.PatientEmail || r.patientEmail || 'N/A'}</small>
+                        </td>
+                        <td>${urgencyBadge}<br><small>${Math.round(hoursUntil * 10) / 10} giờ</small></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary-custom" onclick="viewReminderMessage(${r.Id || r.id}, \`${(r.ReminderMessage || r.reminderMessage || '').replace(/`/g, '\\`')}\`)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('remindersContainer').innerHTML = html;
+        }
+
+        // Toggle select all
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAllReminders').checked;
+            document.querySelectorAll('.reminder-checkbox').forEach(cb => {
+                cb.checked = selectAll;
+            });
+            updateSendButton();
+        }
+
+        // Update send button
+        function updateSendButton() {
+            const checkboxes = document.querySelectorAll('.reminder-checkbox:checked');
+            document.getElementById('sendRemindersBtn').disabled = checkboxes.length === 0;
+        }
+
+        // Send selected reminders
+        async function sendSelectedReminders() {
+            const token = checkAuth();
+            if (!token) return;
+
+            const checkboxes = document.querySelectorAll('.reminder-checkbox:checked');
+            const appointmentIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+            if (appointmentIds.length === 0) {
+                alert('Vui lòng chọn lịch hẹn cần gửi nhắc nhở');
+                return;
+            }
+
+            if (!confirm(`Bạn có chắc muốn gửi nhắc nhở cho ${appointmentIds.length} lịch hẹn?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/appointment-reminders/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ AppointmentIds: appointmentIds })
+                });
+
+                if (!response.ok) throw new Error('Failed to send reminders');
+
+                const result = await response.json();
+                alert(`Đã gửi thành công ${result.data.TotalSent || result.data.totalSent} nhắc nhở!`);
+                
+                loadReminders();
+                loadDashboard();
+            } catch (error) {
+                console.error('Error sending reminders:', error);
+                alert('Không thể gửi nhắc nhở');
+            }
+        }
+
+        // View reminder message
+        function viewReminderMessage(appointmentId, message) {
+            alert(message);
+        }
+
+        // Search patients
+        async function searchPatients() {
+            const token = checkAuth();
+            if (!token) return;
+
+            const query = document.getElementById('patientSearch').value;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/patients/search?query=${encodeURIComponent(query)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to search patients');
+
+                const result = await response.json();
+                const patients = result.data || [];
+
+                displayPatientSearchResults(patients);
+            } catch (error) {
+                console.error('Error searching patients:', error);
+                alert('Không thể tìm kiếm bệnh nhân');
+            }
+        }
+
+        // Display patient search results
+        function displayPatientSearchResults(patients) {
+            if (!patients || patients.length === 0) {
+                document.getElementById('patientSearchResults').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h5>Không tìm thấy</h5>
+                        <p>Không tìm thấy bệnh nhân nào</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Họ tên</th>
+                            <th>Ngày sinh</th>
+                            <th>Tuổi</th>
+                            <th>Giới tính</th>
+                            <th>Liên hệ</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            patients.forEach(p => {
+                const dob = new Date(p.DateOfBirth || p.dateOfBirth);
+                html += `
+                    <tr>
+                        <td><strong>${p.FullName || p.fullName}</strong></td>
+                        <td>${dob.toLocaleDateString('vi-VN')}</td>
+                        <td>${p.Age || p.age}</td>
+                        <td>${p.Gender === 'M' ? 'Nam' : p.Gender === 'F' ? 'Nữ' : 'Khác'}</td>
+                        <td>
+                            ${p.Phone || p.phone}<br>
+                            <small class="text-muted">${p.Email || p.email || 'N/A'}</small>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary-custom" onclick="printPatientHistory(${p.Id || p.id})">
+                                <i class="fas fa-print"></i> In lịch sử
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('patientSearchResults').innerHTML = html;
+        }
+
+        // Print patient history
+        async function printPatientHistory(patientId) {
+            const token = checkAuth();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/patient/${patientId}/medical-history`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load medical history');
+
+                const result = await response.json();
+                const history = result.data;
+
+                // Generate print content
+                const printContent = generatePrintContent(history);
+                document.getElementById('printContent').innerHTML = printContent;
+
+                // Hide main content, show print view
+                document.querySelector('.container').style.display = 'none';
+                document.getElementById('printView').style.display = 'block';
+
+                // Print
+                window.print();
+
+                // Restore view
+                document.querySelector('.container').style.display = 'block';
+                document.getElementById('printView').style.display = 'none';
+            } catch (error) {
+                console.error('Error printing history:', error);
+                alert('Không thể in lịch sử khám bệnh');
+            }
+        }
+
+        // Generate print content
+        function generatePrintContent(history) {
+            const patient = history.Patient || history.patient;
+            const stats = history.Statistics || history.statistics;
+            const encounters = history.Encounters || history.encounters || [];
+
+            let html = `
+                <div class="patient-info-card">
+                    <h4>Thông tin bệnh nhân</h4>
+                    <p><strong>Họ tên:</strong> ${patient.FullName || patient.fullName}</p>
+                    <p><strong>Ngày sinh:</strong> ${new Date(patient.DateOfBirth || patient.dateOfBirth).toLocaleDateString('vi-VN')} (${patient.Age || patient.age} tuổi)</p>
+                    <p><strong>Giới tính:</strong> ${patient.Gender === 'M' ? 'Nam' : patient.Gender === 'F' ? 'Nữ' : 'Khác'}</p>
+                    <p><strong>Điện thoại:</strong> ${patient.Phone || patient.phone}</p>
+                    <p><strong>Email:</strong> ${patient.Email || patient.email || 'N/A'}</p>
+                    <p><strong>Địa chỉ:</strong> ${patient.Address || patient.address || 'N/A'}</p>
+                    <p><strong>Nhóm máu:</strong> ${patient.BloodType || patient.bloodType || 'N/A'}</p>
+                    <p><strong>Dị ứng:</strong> ${patient.Allergies || patient.allergies || 'Không'}</p>
+                </div>
+
+                <div class="mb-3">
+                    <h4>Thống kê</h4>
+                    <p>Tổng số lần khám: ${stats.TotalEncounters || stats.totalEncounters || 0}</p>
+                    <p>Lần khám đầu: ${stats.FirstVisit ? new Date(stats.FirstVisit || stats.firstVisit).toLocaleDateString('vi-VN') : 'N/A'}</p>
+                    <p>Lần khám gần nhất: ${stats.LastVisit ? new Date(stats.LastVisit || stats.lastVisit).toLocaleDateString('vi-VN') : 'N/A'}</p>
+                </div>
+
+                <h4>Lịch sử khám bệnh</h4>
+            `;
+
+            encounters.forEach((e, index) => {
+                const date = new Date(e.Date || e.date);
+                html += `
+                    <div class="history-item">
+                        <h5>Lần khám ${encounters.length - index} - ${date.toLocaleString('vi-VN')}</h5>
+                        <p><strong>Bác sĩ:</strong> ${e.DoctorName || e.doctorName}</p>
+                        <p><strong>Lý do khám:</strong> ${e.ChiefComplaint || e.chiefComplaint}</p>
+                        <p><strong>Chẩn đoán:</strong> ${e.Diagnosis || e.diagnosis || 'N/A'}</p>
+                        <p><strong>Trạng thái:</strong> ${e.Status || e.status}</p>
+
+                        ${(e.LabTests || e.labTests || []).length > 0 ? `
+                            <p><strong>Xét nghiệm:</strong></p>
+                            <ul>
+                                ${(e.LabTests || e.labTests).map(lt => `
+                                    <li>${lt.TestCode || lt.testCode}: ${lt.ResultValue || lt.resultValue} ${lt.Units || lt.units || ''} (${lt.NormalRange || lt.normalRange || 'N/A'})</li>
+                                `).join('')}
+                            </ul>
+                        ` : ''}
+
+                        ${(e.Medications || e.medications || []).length > 0 ? `
+                            <p><strong>Đơn thuốc:</strong></p>
+                            <ul>
+                                ${(e.Medications || e.medications).map(m => `
+                                    <li>${m.MedicationName || m.medicationName} - ${m.Dosage || m.dosage} - ${m.Frequency || m.frequency} - ${m.Duration || m.duration}</li>
+                                `).join('')}
+                            </ul>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            html += `<p class="text-muted text-center mt-4">Ngày in: ${new Date().toLocaleString('vi-VN')}</p>`;
+
+            return html;
+        }
+
+        // Load users
+        async function loadUsers() {
+            const token = checkAuth();
+            if (!token) return;
+
+            const role = document.getElementById('userRole').value;
+            const isActive = document.getElementById('userStatus').value;
+
+            try {
+                const params = new URLSearchParams();
+                if (role) params.append('role', role);
+                if (isActive) params.append('isActive', isActive);
+                
+                const queryString = params.toString();
+                const url = `${API_URL}/admin/users${queryString ? '?' + queryString : ''}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load users');
+
+                const result = await response.json();
+                const users = result.data || [];
+
+                displayUsers(users);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                alert('Không thể tải danh sách người dùng');
+            }
+        }
+
+        // Display users
+        function displayUsers(users) {
+            if (!users || users.length === 0) {
+                document.getElementById('usersContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h5>Không có người dùng</h5>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Điện thoại</th>
+                            <th>Vai trò</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            users.forEach(u => {
+                const statusBadge = (u.IsActive || u.isActive) 
+                    ? '<span class="badge bg-success">Hoạt động</span>'
+                    : '<span class="badge bg-secondary">Vô hiệu hóa</span>';
+
+                html += `
+                    <tr>
+                        <td><strong>${u.FullName || u.fullName}</strong></td>
+                        <td>${u.Email || u.email}</td>
+                        <td>${u.Phone || u.phone}</td>
+                        <td>${u.Role || u.role}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-sm ${(u.IsActive || u.isActive) ? 'btn-warning' : 'btn-success'}" 
+                                    onclick="toggleUserStatus(${u.Id || u.id}, ${!(u.IsActive || u.isActive)})">
+                                ${(u.IsActive || u.isActive) ? '<i class="fas fa-ban"></i>' : '<i class="fas fa-check"></i>'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('usersContainer').innerHTML = html;
+        }
+
+        // Toggle user status
+        async function toggleUserStatus(userId, newStatus) {
+            const token = checkAuth();
+            if (!token) return;
+
+            if (!confirm(`Bạn có chắc muốn ${newStatus ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users/${userId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ IsActive: newStatus })
+                });
+
+                if (!response.ok) throw new Error('Failed to update user status');
+
+                alert('Đã cập nhật trạng thái người dùng');
+                loadUsers();
+                loadDashboard();
+            } catch (error) {
+                console.error('Error updating user status:', error);
+                alert('Không thể cập nhật trạng thái');
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('healthysystem_token');
+            window.location.href = 'login.html';
+        }
+
+        // ============================================================
+        // Doctor Schedule Management Functions
+        // ============================================================
+
+        let allDoctors = [];
+        let currentDoctorSchedules = [];
+        const scheduleModal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+
+        // Load all doctors for dropdown
+        async function loadDoctors() {
+            const token = checkAuth();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/doctors`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load doctors');
+
+                const result = await response.json();
+                allDoctors = result.data || [];
+
+                const select = document.getElementById('doctorSelect');
+                select.innerHTML = '<option value="">-- Chọn bác sĩ --</option>';
+                
+                allDoctors.forEach(doc => {
+                    const option = document.createElement('option');
+                    option.value = doc.userId || doc.UserId || doc.id || doc.Id;
+                    option.textContent = doc.fullName || doc.FullName;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                alert('Không thể tải danh sách bác sĩ');
+            }
+        }
+
+        // Load doctor schedules
+        async function loadDoctorSchedules() {
+            const doctorId = document.getElementById('doctorSelect').value;
+            if (!doctorId) {
+                document.getElementById('scheduleCalendar').innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-alt" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="text-muted mt-2">Chọn bác sĩ để xem lịch làm việc</p>
+                    </div>
+                `;
+                document.getElementById('scheduleListContainer').innerHTML = '';
+                return;
+            }
+
+            const token = checkAuth();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/doctors/${doctorId}/schedules`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load schedules');
+
+                const result = await response.json();
+                const schedules = result.data || [];
+                currentDoctorSchedules = Array.isArray(schedules) ? schedules : [];
+
+                // Get doctor name
+                const selectedDoctor = allDoctors.find(d => (d.userId || d.UserId) == doctorId);
+                const doctorName = selectedDoctor ? (selectedDoctor.fullName || selectedDoctor.FullName) : 'Bác sĩ';
+
+                if (currentDoctorSchedules.length === 0) {
+                    // No schedules yet - show friendly message
+                    document.getElementById('scheduleCalendar').innerHTML = `
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle fa-2x mb-3"></i>
+                            <h5>Bác sĩ ${doctorName} chưa có lịch làm việc</h5>
+                            <p class="mb-3">Vui lòng tạo lịch làm việc để bệnh nhân có thể đăng ký khám</p>
+                            <button class="btn btn-success" onclick="showAddScheduleModal()">
+                                <i class="fas fa-plus me-2"></i>Tạo lịch làm việc ngay
+                            </button>
+                        </div>
+                    `;
+                    document.getElementById('scheduleListContainer').innerHTML = '';
+                } else {
+                    renderScheduleCalendar(currentDoctorSchedules, doctorName);
+                    renderScheduleList(currentDoctorSchedules);
+                }
+            } catch (error) {
+                console.error('Error loading schedules:', error);
+                document.getElementById('scheduleCalendar').innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                        <h5>Không thể tải lịch làm việc</h5>
+                        <p>Vui lòng thử lại sau</p>
+                    </div>
+                `;
+                document.getElementById('scheduleListContainer').innerHTML = '';
+            }
+        }
+
+        // Render schedule calendar (weekly view)
+        function renderScheduleCalendar(schedules, doctorName) {
+            const days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+            const schedulesByDay = {};
+
+            // Group schedules by day
+            schedules.forEach(s => {
+                const day = s.dayOfWeek ?? s.DayOfWeek;
+                if (!schedulesByDay[day]) {
+                    schedulesByDay[day] = [];
+                }
+                schedulesByDay[day].push(s);
+            });
+
+            let html = `
+                <div class="section-title">
+                    <i class="fas fa-calendar-week"></i>
+                    Lịch làm việc tuần của ${doctorName}
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 15%;">Thứ</th>
+                                <th>Lịch làm việc</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            for (let i = 1; i <= 6; i++) { // Monday to Saturday
+                html += `<tr>`;
+                html += `<td><strong>${days[i]}</strong></td>`;
+                html += `<td>`;
+
+                if (schedulesByDay[i] && schedulesByDay[i].length > 0) {
+                    schedulesByDay[i].forEach(s => {
+                        const startTime = s.startTime || s.StartTime;
+                        const endTime = s.endTime || s.EndTime;
+                        const isAvailable = s.isAvailable ?? s.IsAvailable;
+                        const maxAppts = s.maxAppointmentsPerSlot ?? s.MaxAppointmentsPerSlot ?? 4;
+
+                        html += `
+                            <div class="badge ${isAvailable ? 'bg-success' : 'bg-secondary'} me-2 mb-2" style="font-size: 0.9rem;">
+                                <i class="fas fa-clock me-1"></i>
+                                ${startTime} - ${endTime}
+                                <span class="ms-2">(Tối đa: ${maxAppts} BN)</span>
+                                <button class="btn btn-sm btn-link text-white p-0 ms-2" onclick="editSchedule(${s.id || s.Id})" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-link text-white p-0 ms-1" onclick="deleteSchedule(${s.id || s.Id})" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += `<span class="text-muted">Không có lịch</span>`;
+                }
+
+                html += `</td></tr>`;
+            }
+
+            // Sunday
+            html += `<tr>`;
+            html += `<td><strong>${days[0]}</strong></td>`;
+            html += `<td>`;
+            if (schedulesByDay[0] && schedulesByDay[0].length > 0) {
+                schedulesByDay[0].forEach(s => {
+                    const startTime = s.startTime || s.StartTime;
+                    const endTime = s.endTime || s.EndTime;
+                    const isAvailable = s.isAvailable ?? s.IsAvailable;
+                    const maxAppts = s.maxAppointmentsPerSlot ?? s.MaxAppointmentsPerSlot ?? 4;
+
+                    html += `
+                        <div class="badge ${isAvailable ? 'bg-success' : 'bg-secondary'} me-2 mb-2" style="font-size: 0.9rem;">
+                            <i class="fas fa-clock me-1"></i>
+                            ${startTime} - ${endTime}
+                            <span class="ms-2">(Tối đa: ${maxAppts} BN)</span>
+                            <button class="btn btn-sm btn-link text-white p-0 ms-2" onclick="editSchedule(${s.id || s.Id})" title="Sửa">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-link text-white p-0 ms-1" onclick="deleteSchedule(${s.id || s.Id})" title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<span class="text-muted">Không có lịch</span>`;
+            }
+            html += `</td></tr>`;
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('scheduleCalendar').innerHTML = html;
+        }
+
+        // Render schedule list
+        function renderScheduleList(schedules) {
+            if (schedules.length === 0) {
+                document.getElementById('scheduleListContainer').innerHTML = '';
+                return;
+            }
+
+            const days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+
+            let html = `
+                <div class="section-title mt-4">
+                    <i class="fas fa-list"></i>
+                    Danh sách chi tiết (${schedules.length} lịch)
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Ngày làm việc</th>
+                                <th>Thứ</th>
+                                <th>Giờ bắt đầu</th>
+                                <th>Giờ kết thúc</th>
+                                <th>Slot (phút)</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // Sort schedules by date
+            const sortedSchedules = [...schedules].sort((a, b) => {
+                const dateA = new Date(a.scheduleDate || a.ScheduleDate || '2000-01-01');
+                const dateB = new Date(b.scheduleDate || b.ScheduleDate || '2000-01-01');
+                return dateA - dateB;
+            });
+
+            sortedSchedules.forEach(s => {
+                const dayOfWeek = s.dayOfWeek ?? s.DayOfWeek;
+                const dayName = s.dayName || s.DayName || days[dayOfWeek];
+                const startTime = s.startTime || s.StartTime;
+                const endTime = s.endTime || s.EndTime;
+                const isAvailable = s.isAvailable ?? s.IsAvailable;
+                const maxAppts = s.maxAppointmentsPerSlot ?? s.MaxAppointmentsPerSlot ?? 4;
+                const slotLength = s.slotLengthMinutes ?? s.SlotLengthMinutes ?? 30;
+                const id = s.id || s.Id;
+                
+                // Format schedule date
+                const scheduleDate = s.scheduleDate || s.ScheduleDate;
+                let formattedDate = 'N/A';
+                if (scheduleDate) {
+                    const date = new Date(scheduleDate);
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    formattedDate = `${day}/${month}/${year}`;
+                }
+
+                html += `
+                    <tr>
+                        <td><strong>${formattedDate}</strong></td>
+                        <td>${dayName}</td>
+                        <td>${startTime}</td>
+                        <td>${endTime}</td>
+                        <td>${slotLength} phút</td>
+                        <td>
+                            <span class="badge ${isAvailable ? 'bg-success' : 'bg-secondary'}">
+                                ${isAvailable ? 'Hoạt động' : 'Tạm dừng'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary-custom" onclick="editSchedule(${id})" title="Sửa">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteSchedule(${id})" title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('scheduleListContainer').innerHTML = html;
+        }
+
+        // Show add schedule modal
+        function showAddScheduleModal() {
+            const doctorId = document.getElementById('doctorSelect').value;
+            if (!doctorId) {
+                alert('Vui lòng chọn bác sĩ trước');
+                return;
+            }
+
+            const doctor = allDoctors.find(d => (d.userId || d.UserId || d.id || d.Id) == doctorId);
+            if (!doctor) {
+                console.error('Doctor not found in allDoctors array', { doctorId, allDoctors });
+                alert('Không tìm thấy thông tin bác sĩ');
+                return;
+            }
+
+            document.getElementById('scheduleModalTitle').innerHTML = '<i class="fas fa-calendar-plus me-2"></i>Thêm lịch làm việc';
+            document.getElementById('scheduleId').value = '';
+            document.getElementById('scheduleDoctorId').value = doctorId;
+            document.getElementById('scheduleDoctorName').value = doctor.fullName || doctor.FullName;
+            
+            // Reset form
+            document.getElementById('scheduleDayOfWeek').value = '1';
+            document.getElementById('scheduleStartTime').value = '08:00';
+            document.getElementById('scheduleEndTime').value = '17:00';
+            document.getElementById('scheduleMaxAppointments').value = '4';
+            document.getElementById('scheduleIsAvailable').checked = true;
+            
+            // Reset quick mode
+            document.querySelectorAll('.shift-template').forEach(t => t.classList.remove('selected'));
+            document.querySelectorAll('input[id^="day"]').forEach(cb => cb.checked = false);
+            document.getElementById('quickStartTime').value = '08:00';
+            document.getElementById('quickEndTime').value = '12:00';
+            document.getElementById('quickMaxPatients').value = '4';
+            document.getElementById('customTimeQuick').style.display = 'none';
+            
+            // Reset custom mode
+            document.getElementById('customScheduleBuilder').innerHTML = '';
+            
+            // Show quick mode tab by default
+            document.getElementById('quick-tab').click();
+
+            scheduleModal.show();
+        }
+
+        // Template selection
+        let selectedTemplate = null;
+        const shiftTemplates = {
+            morning: { start: '08:00', end: '12:00' },
+            afternoon: { start: '13:30', end: '17:30' },
+            evening: { start: '18:00', end: '21:00' },
+            fullday: { start: '08:00', end: '17:00' }
+        };
+
+        function selectTemplate(template) {
+            document.querySelectorAll('.shift-template').forEach(t => t.classList.remove('selected'));
+            document.querySelector(`[data-template="${template}"]`).classList.add('selected');
+            selectedTemplate = template;
+
+            if (template === 'custom-quick') {
+                document.getElementById('customTimeQuick').style.display = 'block';
+            } else {
+                document.getElementById('customTimeQuick').style.display = 'none';
+                if (shiftTemplates[template]) {
+                    document.getElementById('quickStartTime').value = shiftTemplates[template].start;
+                    document.getElementById('quickEndTime').value = shiftTemplates[template].end;
+                }
+            }
+        }
+
+        function selectAllDays() {
+            document.querySelectorAll('input[id^="day"]').forEach(cb => cb.checked = true);
+        }
+
+        // Custom shift builder
+        let customShiftCount = 0;
+        function addCustomShift() {
+            customShiftCount++;
+            const container = document.getElementById('customScheduleBuilder');
+            const html = `
+                <div class="custom-shift-item" id="shift-${customShiftCount}">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-3">
+                            <label class="form-label small">Thứ</label>
+                            <select class="form-select form-select-sm" id="customDay-${customShiftCount}">
+                                <option value="1">Thứ Hai</option>
+                                <option value="2">Thứ Ba</option>
+                                <option value="3">Thứ Tư</option>
+                                <option value="4">Thứ Năm</option>
+                                <option value="5">Thứ Sáu</option>
+                                <option value="6">Thứ Bảy</option>
+                                <option value="0">Chủ Nhật</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Giờ bắt đầu</label>
+                            <input type="time" class="form-control form-control-sm" id="customStart-${customShiftCount}" value="08:00">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Giờ kết thúc</label>
+                            <input type="time" class="form-control form-control-sm" id="customEnd-${customShiftCount}" value="12:00">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small">Số BN</label>
+                            <input type="number" class="form-control form-control-sm" id="customMax-${customShiftCount}" value="4" min="1" max="20">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label small">&nbsp;</label>
+                            <button class="btn btn-sm btn-danger w-100" onclick="removeCustomShift(${customShiftCount})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeCustomShift(id) {
+            document.getElementById(`shift-${id}`).remove();
+        }
+
+        // Main save function - route to appropriate handler
+        async function saveScheduleMain() {
+            const activeTab = document.querySelector('#scheduleTabContent .tab-pane.active').id;
+            
+            if (activeTab === 'quick-mode') {
+                await saveQuickSchedule();
+            } else if (activeTab === 'custom-mode') {
+                await saveCustomSchedule();
+            } else if (activeTab === 'single-mode') {
+                await saveSingleSchedule();
+            }
+        }
+
+        // Save quick schedule (multiple days with same time)
+        async function saveQuickSchedule() {
+            const doctorId = document.getElementById('scheduleDoctorId').value;
+            const selectedDays = [];
+            document.querySelectorAll('input[id^="day"]:checked').forEach(cb => {
+                selectedDays.push(parseInt(cb.value));
+            });
+
+            if (selectedDays.length === 0) {
+                alert('Vui lòng chọn ít nhất 1 ngày trong tuần');
+                return;
+            }
+
+            if (!selectedTemplate) {
+                alert('Vui lòng chọn mẫu ca làm việc');
+                return;
+            }
+
+            const startTime = document.getElementById('quickStartTime').value;
+            const endTime = document.getElementById('quickEndTime').value;
+            const maxPatients = parseInt(document.getElementById('quickMaxPatients').value);
+            const weeksToRepeat = parseInt(document.getElementById('weeksToRepeat').value);
+
+            if (!startTime || !endTime) {
+                alert('Vui lòng nhập giờ làm việc');
+                return;
+            }
+
+            const schedules = selectedDays.map(day => ({
+                dayOfWeek: day,
+                startTime: startTime,
+                endTime: endTime,
+                maxAppointmentsPerSlot: maxPatients,
+                isAvailable: true,
+                weeksToRepeat: weeksToRepeat
+            }));
+
+            await saveBulkSchedules(doctorId, schedules);
+        }
+
+        // Save custom schedules (different times for each day)
+        async function saveCustomSchedule() {
+            const doctorId = document.getElementById('scheduleDoctorId').value;
+            const schedules = [];
+
+            document.querySelectorAll('.custom-shift-item').forEach(item => {
+                const id = item.id.split('-')[1];
+                const day = parseInt(document.getElementById(`customDay-${id}`).value);
+                const start = document.getElementById(`customStart-${id}`).value;
+                const end = document.getElementById(`customEnd-${id}`).value;
+                const max = parseInt(document.getElementById(`customMax-${id}`).value);
+
+                schedules.push({
+                    dayOfWeek: day,
+                    startTime: start,
+                    endTime: end,
+                    maxAppointmentsPerSlot: max,
+                    isAvailable: true
+                });
+            });
+
+            if (schedules.length === 0) {
+                alert('Vui lòng thêm ít nhất 1 ca làm việc');
+                return;
+            }
+
+            await saveBulkSchedules(doctorId, schedules);
+        }
+
+        // Save single schedule (original functionality)
+        async function saveSingleSchedule() {
+            const scheduleId = document.getElementById('scheduleId').value;
+            const doctorId = document.getElementById('scheduleDoctorId').value;
+            const dayOfWeek = parseInt(document.getElementById('scheduleDayOfWeek').value);
+            const startTime = document.getElementById('scheduleStartTime').value;
+            const endTime = document.getElementById('scheduleEndTime').value;
+            const maxAppointments = parseInt(document.getElementById('scheduleMaxAppointments').value);
+            const isAvailable = document.getElementById('scheduleIsAvailable').checked;
+
+            if (!startTime || !endTime) {
+                alert('Vui lòng nhập đầy đủ thông tin');
+                return;
+            }
+
+            const token = checkAuth();
+            if (!token) return;
+
+            try {
+                let url, method;
+                if (scheduleId) {
+                    // Update existing
+                    url = `${API_URL}/admin/doctors/schedules/${scheduleId}`;
+                    method = 'PUT';
+                } else {
+                    // Create new
+                    url = `${API_URL}/admin/doctors/${doctorId}/schedules`;
+                    method = 'POST';
+                }
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        dayOfWeek: dayOfWeek,
+                        startTime: startTime,
+                        endTime: endTime,
+                        maxAppointmentsPerSlot: maxAppointments,
+                        isAvailable: isAvailable
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Lỗi khi lưu lịch làm việc');
+                }
+
+                const result = await response.json();
+                alert('Đã lưu lịch làm việc thành công');
+                scheduleModal.hide();
+                loadDoctorSchedules();
+            } catch (error) {
+                console.error('Error saving schedule:', error);
+                alert(error.message || 'Không thể lưu lịch làm việc');
+            }
+        }
+
+        // Bulk save schedules
+        async function saveBulkSchedules(doctorId, schedules) {
+            const token = checkAuth();
+            if (!token) return;
+
+            try {
+                document.getElementById('saveButtonText').textContent = 'Đang lưu...';
+                
+                // Convert schedules to match backend API format
+                const convertedSchedules = schedules.map(schedule => {
+                    // Find next occurrence of this day of week
+                    const today = new Date();
+                    let nextDate = new Date(today);
+                    const targetDay = schedule.dayOfWeek;
+                    
+                    // Move to next occurrence of target day
+                    while (nextDate.getDay() !== targetDay) {
+                        nextDate.setDate(nextDate.getDate() + 1);
+                    }
+                    
+                    return {
+                        scheduleDate: nextDate.toISOString().split('T')[0], // yyyy-MM-dd format
+                        startTime: schedule.startTime,
+                        endTime: schedule.endTime,
+                        slotLengthMinutes: schedule.maxAppointmentsPerSlot || 30,
+                        isAvailable: schedule.isAvailable !== false,
+                        weeksToRepeat: schedule.weeksToRepeat || 1
+                    };
+                });
+                
+                // Call API for each schedule
+                const promises = convertedSchedules.map(schedule => 
+                    fetch(`${API_URL}/admin/doctors/${doctorId}/schedules`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(schedule)
+                    }).then(async res => {
+                        const data = await res.json();
+                        return { ok: res.ok, data };
+                    })
+                );
+
+                const results = await Promise.all(promises);
+                const failedCount = results.filter(r => !r.ok).length;
+                
+                // Count total schedules created (including recurring weeks)
+                let totalCreated = 0;
+                results.forEach(r => {
+                    if (r.ok && r.data.created) {
+                        totalCreated += r.data.created;
+                    }
+                });
+
+                if (failedCount > 0) {
+                    alert(`Đã tạo ${totalCreated} ca làm việc. ${failedCount} yêu cầu bị lỗi.`);
+                } else {
+                    alert(`✅ Thành công! Đã tạo ${totalCreated} ca làm việc (bao gồm các tuần lặp lại)`);
+                }
+
+                scheduleModal.hide();
+                loadDoctorSchedules();
+            } catch (error) {
+                console.error('Error saving schedules:', error);
+                alert('Có lỗi xảy ra khi lưu lịch làm việc');
+            } finally {
+                document.getElementById('saveButtonText').textContent = 'Lưu lịch';
+            }
+        }
+
+        // Edit schedule
+        function editSchedule(scheduleId) {
+            const schedule = currentDoctorSchedules.find(s => (s.id || s.Id) == scheduleId);
+            if (!schedule) {
+                console.error('Schedule not found', { scheduleId, currentDoctorSchedules });
+                return;
+            }
+
+            const doctorId = document.getElementById('doctorSelect').value;
+            const doctor = allDoctors.find(d => (d.userId || d.UserId || d.id || d.Id) == doctorId);
+
+            document.getElementById('scheduleModalTitle').innerHTML = '<i class="fas fa-edit me-2"></i>Sửa lịch làm việc';
+            document.getElementById('scheduleId').value = scheduleId;
+            document.getElementById('scheduleDoctorId').value = doctorId;
+            document.getElementById('scheduleDoctorName').value = doctor ? (doctor.fullName || doctor.FullName) : '';
+            document.getElementById('scheduleDayOfWeek').value = schedule.dayOfWeek ?? schedule.DayOfWeek;
+            document.getElementById('scheduleStartTime').value = schedule.startTime || schedule.StartTime;
+            document.getElementById('scheduleEndTime').value = schedule.endTime || schedule.EndTime;
+            document.getElementById('scheduleMaxAppointments').value = schedule.maxAppointmentsPerSlot ?? schedule.MaxAppointmentsPerSlot ?? 4;
+            document.getElementById('scheduleIsAvailable').checked = schedule.isAvailable ?? schedule.IsAvailable ?? true;
+
+            // Switch to single mode tab for editing
+            document.getElementById('single-tab').click();
+
+            scheduleModal.show();
+        }
+
+        // Save schedule (create or update)
+        async function saveSchedule() {
+            const token = checkAuth();
+            if (!token) return;
+
+            const scheduleId = document.getElementById('scheduleId').value;
+            const doctorId = document.getElementById('scheduleDoctorId').value;
+            const dayOfWeek = parseInt(document.getElementById('scheduleDayOfWeek').value);
+            const startTime = document.getElementById('scheduleStartTime').value;
+            const endTime = document.getElementById('scheduleEndTime').value;
+            const maxAppointments = parseInt(document.getElementById('scheduleMaxAppointments').value);
+            const isAvailable = document.getElementById('scheduleIsAvailable').checked;
+
+            // Validation
+            if (!startTime || !endTime) {
+                alert('Vui lòng nhập đầy đủ thời gian');
+                return;
+            }
+
+            if (startTime >= endTime) {
+                alert('Giờ bắt đầu phải nhỏ hơn giờ kết thúc');
+                return;
+            }
+
+            try {
+                let response;
+                if (scheduleId) {
+                    // Update
+                    response = await fetch(`${API_URL}/admin/schedules/${scheduleId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            StartTime: startTime,
+                            EndTime: endTime,
+                            MaxAppointmentsPerSlot: maxAppointments,
+                            IsAvailable: isAvailable
+                        })
+                    });
+                } else {
+                    // Create
+                    response = await fetch(`${API_URL}/admin/doctors/${doctorId}/schedules`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            DayOfWeek: dayOfWeek,
+                            StartTime: startTime,
+                            EndTime: endTime,
+                            MaxAppointmentsPerSlot: maxAppointments,
+                            IsAvailable: isAvailable
+                        })
+                    });
+                }
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Lỗi khi lưu lịch làm việc');
+                }
+
+                const result = await response.json();
+                alert(result.message || 'Đã lưu lịch làm việc thành công');
+                scheduleModal.hide();
+                loadDoctorSchedules();
+            } catch (error) {
+                console.error('Error saving schedule:', error);
+                alert(error.message || 'Không thể lưu lịch làm việc');
+            }
+        }
+
+        // Delete schedule
+        async function deleteSchedule(scheduleId) {
+            if (!confirm('Bạn có chắc muốn xóa lịch làm việc này?')) {
+                return;
+            }
+
+            const token = checkAuth();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/schedules/${scheduleId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete schedule');
+
+                const result = await response.json();
+                alert(result.message || 'Đã xóa lịch làm việc');
+                loadDoctorSchedules();
+            } catch (error) {
+                console.error('Error deleting schedule:', error);
+                alert('Không thể xóa lịch làm việc');
+            }
+        }
+
+        // ============================================================
+        // Sprint 10 - Create Staff Account Functions
+        // ============================================================
+
+        // Toggle doctor-specific fields
+        function toggleDoctorFields() {
+            const accountType = document.querySelector('input[name="accountType"]:checked').value;
+            const doctorFields = document.getElementById('doctorFields');
+            
+            if (accountType === 'doctor') {
+                doctorFields.style.display = 'contents';
+            } else {
+                doctorFields.style.display = 'none';
+            }
+        }
+
+        // Reset create staff form
+        function resetCreateStaffForm() {
+            document.getElementById('createStaffForm').reset();
+            document.getElementById('createAccountMessage').style.display = 'none';
+            document.getElementById('staffImagePreview').style.display = 'none';
+            toggleDoctorFields();
+        }
+
+        // ==========================================
+        // PROFILE IMAGE UPLOAD FUNCTIONALITY
+        // ==========================================
+
+        // Upload staff profile image
+        async function uploadStaffProfileImage(userId, imageFile) {
+            const token = checkAuth();
+            if (!token) return;
+
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users/${userId}/profile-image`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to upload profile image');
+                }
+
+                const result = await response.json();
+                console.log('Profile image uploaded successfully:', result);
+                return result;
+            } catch (error) {
+                console.error('Error uploading staff profile image:', error);
+                throw error;
+            }
+        }
+
+        // Image preview for staff creation
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageInput = document.getElementById('staffProfileImage');
+            if (imageInput) {
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file type
+                        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                        if (!allowedTypes.includes(file.type)) {
+                            alert('Chỉ chấp nhận file ảnh JPG, PNG, GIF');
+                            e.target.value = '';
+                            document.getElementById('staffImagePreview').style.display = 'none';
+                            return;
+                        }
+
+                        // Validate file size (max 5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('Kích thước file không được vượt quá 5MB');
+                            e.target.value = '';
+                            document.getElementById('staffImagePreview').style.display = 'none';
+                            return;
+                        }
+
+                        // Show preview
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            document.getElementById('staffImagePreviewImg').src = event.target.result;
+                            document.getElementById('staffImagePreview').style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        document.getElementById('staffImagePreview').style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Create staff account
+        async function createStaffAccount(event) {
+            event.preventDefault();
+
+            const token = checkAuth();
+            if (!token) return;
+
+            // Get form data
+            const accountType = document.querySelector('input[name="accountType"]:checked').value;
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validate password confirmation
+            if (password !== confirmPassword) {
+                showCreateAccountMessage('Mật khẩu xác nhận không khớp', 'danger');
+                return;
+            }
+
+            // Build request data
+            const requestData = {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phone: phone,
+                password: password,
+                role: accountType
+            };
+
+            // Add doctor-specific fields if account type is doctor
+            if (accountType === 'doctor') {
+                requestData.specialization = document.getElementById('specialization').value;
+                requestData.licenseNumber = document.getElementById('licenseNumber').value.trim() || null;
+                
+                const dob = document.getElementById('dateOfBirth').value;
+                requestData.dateOfBirth = dob ? new Date(dob).toISOString() : null;
+                
+                requestData.gender = document.getElementById('gender').value;
+                requestData.address = document.getElementById('address').value.trim() || null;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users/create-staff`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Không thể tạo tài khoản');
+                }
+
+                // Step 2: Upload profile image if selected
+                const userId = result.data.userId;
+                const imageFile = document.getElementById('staffProfileImage').files[0];
+                if (imageFile && userId) {
+                    try {
+                        await uploadStaffProfileImage(userId, imageFile);
+                    } catch (imgError) {
+                        console.error('Failed to upload profile image:', imgError);
+                        // Don't fail the whole operation if image upload fails
+                    }
+                }
+
+                // Show success message
+                showCreateAccountMessage(
+                    `✅ ${result.message}<br>
+                    <strong>Email:</strong> ${result.data.email}<br>
+                    <strong>Họ tên:</strong> ${result.data.fullName}<br>
+                    <strong>Vai trò:</strong> ${result.data.role === 'doctor' ? 'Bác sĩ' : 'Tiếp tân'}`,
+                    'success'
+                );
+
+                // Reset form after success
+                setTimeout(() => {
+                    resetCreateStaffForm();
+                }, 3000);
+
+                // Reload users list if on users tab
+                if (document.getElementById('users-tab').classList.contains('active')) {
+                    loadUsers();
+                }
+
+            } catch (error) {
+                console.error('Error creating staff account:', error);
+                showCreateAccountMessage(`❌ ${error.message}`, 'danger');
+            }
+        }
+
+        // Show create account message
+        function showCreateAccountMessage(message, type) {
+            const messageDiv = document.getElementById('createAccountMessage');
+            messageDiv.className = `alert alert-${type}`;
+            messageDiv.innerHTML = message;
+            messageDiv.style.display = 'block';
+
+            // Auto-hide after 5 seconds for success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // ============================================================
+        // End Sprint 10 Functions
+        // ============================================================
+
+        // ============================================================
+        // Health News Management Functions
+        // ============================================================
+
+        let currentNewsPage = 1;
+        const newsPageSize = 10;
+
+        async function loadHealthNews(page = 1) {
+            currentNewsPage = page;
+            const token = localStorage.getItem('token');
+            const category = document.getElementById('filterNewsCategory').value;
+            const isPublished = document.getElementById('filterNewsPublished').value;
+            const isFeatured = document.getElementById('filterNewsFeatured').value;
+
+            let url = `${API_URL}/healthnews?page=${page}&pageSize=${newsPageSize}`;
+            if (category) url += `&category=${encodeURIComponent(category)}`;
+            if (isPublished) url += `&isPublished=${isPublished}`;
+            if (isFeatured) url += `&isFeatured=${isFeatured}`;
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load health news');
+
+                const result = await response.json();
+                displayHealthNews(result.data);
+                displayNewsPagination(result.total, result.page, result.pageSize);
+            } catch (error) {
+                console.error('Error loading health news:', error);
+                document.getElementById('healthNewsList').innerHTML = `
+                    <tr><td colspan="8" class="text-center text-danger">Không thể tải dữ liệu</td></tr>
+                `;
+            }
+        }
+
+        function displayHealthNews(newsList) {
+            const tbody = document.getElementById('healthNewsList');
+            
+            if (!newsList || newsList.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="8" class="text-center text-muted">Chưa có tin tức nào</td></tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = newsList.map(news => `
+                <tr>
+                    <td>
+                        ${news.imageUrl ? 
+                            `<img src="${news.imageUrl}" alt="${news.title}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">` :
+                            `<div style="width: 60px; height: 60px; background: #e9ecef; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-image text-muted"></i>
+                            </div>`
+                        }
+                    </td>
+                    <td>
+                        <div class="fw-bold">${news.title}</div>
+                        <small class="text-muted">${news.summary ? news.summary.substring(0, 60) + '...' : ''}</small>
+                        ${news.isFeatured ? '<span class="badge bg-warning ms-2"><i class="fas fa-star"></i> Nổi bật</span>' : ''}
+                    </td>
+                    <td>${news.category}</td>
+                    <td>${news.author}</td>
+                    <td><i class="fas fa-eye text-muted me-1"></i>${news.viewCount || 0}</td>
+                    <td>
+                        ${news.isPublished ? 
+                            '<span class="badge bg-success"><i class="fas fa-check"></i> Đã xuất bản</span>' :
+                            '<span class="badge bg-secondary"><i class="fas fa-file"></i> Nháp</span>'
+                        }
+                    </td>
+                    <td>${new Date(news.createdAt).toLocaleDateString('vi-VN')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editHealthNews(${news.id})" title="Sửa">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteHealthNews(${news.id})" title="Xóa">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function displayNewsPagination(total, currentPage, pageSize) {
+            const totalPages = Math.ceil(total / pageSize);
+            const pagination = document.querySelector('#newsPagination ul');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            // Previous button
+            html += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadHealthNews(${currentPage - 1}); return false;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `
+                        <li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="loadHealthNews(${i}); return false;">${i}</a>
+                        </li>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // Next button
+            html += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadHealthNews(${currentPage + 1}); return false;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+
+            pagination.innerHTML = html;
+        }
+
+        function resetHealthNewsForm() {
+            document.getElementById('healthNewsForm').reset();
+            document.getElementById('newsId').value = '';
+            document.getElementById('healthNewsModalTitle').textContent = 'Tạo tin tức mới';
+            removeImagePreview('news');
+        }
+
+        async function editHealthNews(id) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_URL}/healthnews/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load news');
+
+                const news = await response.json();
+                
+                document.getElementById('newsId').value = news.id;
+                document.getElementById('newsTitle').value = news.title;
+                document.getElementById('newsSummary').value = news.summary || '';
+                document.getElementById('newsContent').value = news.content;
+                document.getElementById('newsImageUrl').value = news.imageUrl || '';
+                document.getElementById('newsCategory').value = news.category;
+                document.getElementById('newsAuthor').value = news.author;
+                document.getElementById('newsIsFeatured').checked = news.isFeatured;
+                document.getElementById('newsIsPublished').checked = news.isPublished;
+                
+                // Show image preview if exists
+                if (news.imageUrl) {
+                    showImagePreview('news', news.imageUrl);
+                }
+                
+                document.getElementById('healthNewsModalTitle').textContent = 'Chỉnh sửa tin tức';
+                
+                const modal = new bootstrap.Modal(document.getElementById('healthNewsModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading news:', error);
+                alert('Không thể tải thông tin tin tức');
+            }
+        }
+
+        async function saveHealthNews() {
+            const form = document.getElementById('healthNewsForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            const newsId = document.getElementById('newsId').value;
+            
+            const newsData = {
+                title: document.getElementById('newsTitle').value,
+                summary: document.getElementById('newsSummary').value,
+                content: document.getElementById('newsContent').value,
+                imageUrl: document.getElementById('newsImageUrl').value || null,
+                category: document.getElementById('newsCategory').value,
+                author: document.getElementById('newsAuthor').value,
+                isFeatured: document.getElementById('newsIsFeatured').checked,
+                isPublished: document.getElementById('newsIsPublished').checked
+            };
+            
+            // Add ID for update requests
+            if (newsId) {
+                newsData.id = parseInt(newsId);
+            }
+
+            // Log data for debugging
+            console.log('Saving news data:', {
+                ...newsData,
+                imageUrl: newsData.imageUrl ? `${newsData.imageUrl.substring(0, 50)}... (length: ${newsData.imageUrl.length})` : null
+            });
+
+            try {
+                let response;
+                if (newsId) {
+                    // Update
+                    response = await fetch(`${API_URL}/healthnews/${newsId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newsData)
+                    });
+                } else {
+                    // Create
+                    response = await fetch(`${API_URL}/healthnews`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newsData)
+                    });
+                }
+
+                if (!response.ok) {
+                    let errorMessage = `${response.status} ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorData.message || errorMessage;
+                        console.error('Server error details:', errorData);
+                    } catch (e) {
+                        const errorText = await response.text();
+                        console.error('Server error text:', errorText);
+                        if (errorText) errorMessage = errorText;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const result = await response.json();
+                console.log('Save successful:', result);
+
+                alert(newsId ? 'Cập nhật tin tức thành công!' : 'Tạo tin tức mới thành công!');
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('healthNewsModal'));
+                modal.hide();
+                
+                loadHealthNews(currentNewsPage);
+            } catch (error) {
+                console.error('Error saving news:', error);
+                alert('Không thể lưu tin tức: ' + error.message);
+            }
+        }
+
+        async function deleteHealthNews(id) {
+            if (!confirm('Bạn có chắc chắn muốn xóa tin tức này?')) return;
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/healthnews/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete news');
+
+                alert('Xóa tin tức thành công!');
+                loadHealthNews(currentNewsPage);
+            } catch (error) {
+                console.error('Error deleting news:', error);
+                alert('Không thể xóa tin tức');
+            }
+        }
+
+        // ============================================================
+        // Service Prices Management Functions
+        // ============================================================
+
+        async function loadServicePrices() {
+            const token = localStorage.getItem('token');
+            const category = document.getElementById('filterPriceCategory').value;
+            const isActive = document.getElementById('filterPriceActive').value;
+
+            let url = `${API_URL}/serviceprices`;
+            const params = [];
+            if (category) params.push(`category=${encodeURIComponent(category)}`);
+            if (isActive) params.push(`isActive=${isActive}`);
+            if (params.length > 0) url += '?' + params.join('&');
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load service prices');
+
+                const groupedData = await response.json();
+                displayServicePrices(groupedData);
+            } catch (error) {
+                console.error('Error loading service prices:', error);
+                document.getElementById('servicePricesList').innerHTML = `
+                    <div class="alert alert-danger">Không thể tải dữ liệu</div>
+                `;
+            }
+        }
+
+        function displayServicePrices(groupedData) {
+            const container = document.getElementById('servicePricesList');
+            
+            if (!groupedData || groupedData.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info text-center">Chưa có dịch vụ nào</div>
+                `;
+                return;
+            }
+
+            container.innerHTML = groupedData.map(group => `
+                <div class="card mb-3">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                        <h5 class="mb-0 text-white"><i class="fas fa-folder-open me-2"></i>${group.category}</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 service-price-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 60px;">STT</th>
+                                        <th style="width: 25%;">Tên dịch vụ</th>
+                                        <th style="width: 15%;">Giá</th>
+                                        <th style="width: auto;">Mô tả</th>
+                                        <th style="width: 130px;">Trạng thái</th>
+                                        <th style="width: 100px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${group.services.map((service, index) => `
+                                        <tr>
+                                            <td>${service.displayOrder || index + 1}</td>
+                                            <td><strong>${service.serviceName}</strong></td>
+                                            <td class="text-primary fw-bold">${formatCurrency(service.price)} ${service.unit}</td>
+                                            <td>${service.description || '-'}</td>
+                                            <td>
+                                                ${service.isActive ? 
+                                                    '<span class="badge bg-success"><i class="fas fa-check"></i> Áp dụng</span>' :
+                                                    '<span class="badge bg-secondary"><i class="fas fa-pause"></i> Tạm ngưng</span>'
+                                                }
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editServicePrice(${service.id})" title="Sửa">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteServicePrice(${service.id})" title="Xóa">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount);
+        }
+
+        function resetServicePriceForm() {
+            document.getElementById('servicePriceForm').reset();
+            document.getElementById('priceId').value = '';
+            document.getElementById('priceIsActive').checked = true;
+            document.getElementById('servicePriceModalTitle').textContent = 'Thêm dịch vụ mới';
+        }
+
+        async function editServicePrice(id) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_URL}/serviceprices/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load service price');
+
+                const price = await response.json();
+                
+                document.getElementById('priceId').value = price.id;
+                document.getElementById('priceServiceName').value = price.serviceName;
+                document.getElementById('priceCategory').value = price.category;
+                document.getElementById('priceAmount').value = price.price;
+                document.getElementById('priceUnit').value = price.unit;
+                document.getElementById('priceDescription').value = price.description || '';
+                document.getElementById('priceDisplayOrder').value = price.displayOrder || 0;
+                document.getElementById('priceIsActive').checked = price.isActive;
+                
+                document.getElementById('servicePriceModalTitle').textContent = 'Chỉnh sửa dịch vụ';
+                
+                const modal = new bootstrap.Modal(document.getElementById('servicePriceModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading service price:', error);
+                alert('Không thể tải thông tin dịch vụ');
+            }
+        }
+
+        async function saveServicePrice() {
+            const form = document.getElementById('servicePriceForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            const priceId = document.getElementById('priceId').value;
+            
+            const priceData = {
+                serviceName: document.getElementById('priceServiceName').value,
+                category: document.getElementById('priceCategory').value,
+                price: parseFloat(document.getElementById('priceAmount').value),
+                unit: document.getElementById('priceUnit').value,
+                description: document.getElementById('priceDescription').value || null,
+                displayOrder: parseInt(document.getElementById('priceDisplayOrder').value),
+                isActive: document.getElementById('priceIsActive').checked
+            };
+
+            try {
+                let response;
+                if (priceId) {
+                    // Update
+                    response = await fetch(`${API_URL}/serviceprices/${priceId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(priceData)
+                    });
+                } else {
+                    // Create
+                    response = await fetch(`${API_URL}/serviceprices`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(priceData)
+                    });
+                }
+
+                if (!response.ok) throw new Error('Failed to save service price');
+
+                alert(priceId ? 'Cập nhật dịch vụ thành công!' : 'Thêm dịch vụ mới thành công!');
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('servicePriceModal'));
+                modal.hide();
+                
+                loadServicePrices();
+            } catch (error) {
+                console.error('Error saving service price:', error);
+                alert('Không thể lưu dịch vụ');
+            }
+        }
+
+        async function deleteServicePrice(id) {
+            if (!confirm('Bạn có chắc chắn muốn xóa dịch vụ này?')) return;
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/serviceprices/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete service price');
+
+                alert('Xóa dịch vụ thành công!');
+                loadServicePrices();
+            } catch (error) {
+                console.error('Error deleting service price:', error);
+                alert('Không thể xóa dịch vụ');
+            }
+        }
+
+        // ============================================================
+        // Image Upload Functions
+        // ============================================================
+
+        function handleImageUpload(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Vui lòng chọn file ảnh!');
+                return;
+            }
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Kích thước ảnh không được vượt quá 5MB!');
+                return;
+            }
+
+            // Convert to base64
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                
+                if (type === 'news') {
+                    document.getElementById('newsImageUrl').value = base64Image;
+                    showImagePreview('news', base64Image);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showImagePreview(type, imageSrc) {
+            if (type === 'news') {
+                const preview = document.getElementById('newsImagePreview');
+                const img = document.getElementById('newsImagePreviewImg');
+                img.src = imageSrc;
+                preview.style.display = 'block';
+            }
+        }
+
+        function removeImagePreview(type) {
+            if (type === 'news') {
+                const preview = document.getElementById('newsImagePreview');
+                const img = document.getElementById('newsImagePreviewImg');
+                const input = document.getElementById('newsImageUrl');
+                const fileInput = document.getElementById('newsImageFile');
+                
+                img.src = '';
+                input.value = '';
+                fileInput.value = '';
+                preview.style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        // End CMS Functions
+        // ============================================================
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = checkAuth();
+            if (token) {
+                loadDashboard();
+                loadDoctors(); // Load doctors for schedule management
+            }
+
+            // Add event listeners for CMS tabs
+            const healthNewsTab = document.getElementById('health-news-tab');
+            const servicePricesTab = document.getElementById('service-prices-tab');
+
+            if (healthNewsTab) {
+                healthNewsTab.addEventListener('shown.bs.tab', function() {
+                    loadHealthNews();
+                });
+            }
+
+            if (servicePricesTab) {
+                servicePricesTab.addEventListener('shown.bs.tab', function() {
+                    loadServicePrices();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

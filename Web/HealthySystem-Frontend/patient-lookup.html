@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra cứu thông tin bệnh nhân - Healthy System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #16a085;
+            --secondary-color: #27ae60;
+            --accent-color: #1abc9c;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .search-input-group {
+            position: relative;
+        }
+
+        .search-input-group input {
+            padding-left: 3rem;
+            border-radius: 25px;
+            border: 2px solid #e8e8e8;
+            height: 50px;
+        }
+
+        .search-input-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(22, 160, 133, 0.25);
+        }
+
+        .search-input-group .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8c8c8c;
+        }
+
+        .btn-search {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-search:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 160, 133, 0.3);
+        }
+
+        .patient-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        .patient-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #595959;
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            color: #262626;
+            flex-grow: 1;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .treatment-item {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid;
+        }
+
+        .treatment-item.active {
+            border-left-color: #52c41a;
+            background: #f6ffed;
+        }
+
+        .treatment-item.completed {
+            border-left-color: #8c8c8c;
+        }
+
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 4px;
+            background: #e8e8e8;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s;
+        }
+
+        .badge-status {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+
+        .badge-completed {
+            background: #f0f0f0;
+            color: #8c8c8c;
+        }
+
+        .appointment-badge {
+            background: #e6f7ff;
+            color: #0958d9;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #8c8c8c;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .btn-back {
+            background: #f5f5f5;
+            color: #595959;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #e8e8e8;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3rem;
+            color: var(--primary-color);
+        }
+
+        /* Medical History Styles */
+        .stat-card {
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.9;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #595959;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: #f5f5f5;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            padding-bottom: 2rem;
+            border-left: 2px solid #e8e8e8;
+        }
+
+        .timeline-item:last-child {
+            border-left: none;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: -1.25rem;
+            top: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline-content {
+            background: white;
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .timeline-content:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .timeline-date {
+            color: #8c8c8c;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-doctor {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .result-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-normal {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        .result-abnormal {
+            background: #fff2e8;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+
+        .result-critical {
+            background: #fff1f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+
+        .result-pending {
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+
+        .test-result-item {
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-result-item.abnormal {
+            background: #fff7e6;
+            border-left: 3px solid #fa8c16;
+        }
+
+        .medication-item {
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .btn-view-detail {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-view-detail:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-search me-2"></i>
+                        Tra cứu thông tin bệnh nhân
+                    </h1>
+                    <p class="mb-0 mt-2 opacity-75">Tìm kiếm và xem lịch sử khám bệnh, liệu trình điều trị</p>
+                </div>
+                <button class="btn btn-back" onclick="window.location.href='doctor-dashboard.html'">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Quay lại
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Search Form -->
+        <div class="search-card">
+            <div class="row align-items-end">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Tìm kiếm theo</label>
+                    <select class="form-select" id="searchType">
+                        <option value="email">Email</option>
+                        <option value="phone">Số điện thoại</option>
+                        <option value="name">Họ tên</option>
+                        <option value="id">Mã bệnh nhân</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Từ khóa tìm kiếm</label>
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="form-control" id="searchKeyword" 
+                               placeholder="Nhập từ khóa tìm kiếm...">
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <button class="btn btn-search w-100" onclick="searchPatient()">
+                        <i class="fas fa-search me-2"></i>
+                        Tìm kiếm
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+            <p class="mt-3 text-muted">Đang tìm kiếm...</p>
+        </div>
+
+        <!-- Search Results -->
+        <div id="searchResults"></div>
+
+        <!-- Patient Details -->
+        <div id="patientDetails" style="display: none;">
+            <!-- Patient Info -->
+            <div class="patient-card">
+                <div class="section-title">
+                    <i class="fas fa-user-circle text-primary"></i>
+                    Thông tin bệnh nhân
+                </div>
+                <div class="row">
+                    <div class="col-md-2 text-center">
+                        <div class="patient-avatar" id="patientAvatar">BN</div>
+                    </div>
+                    <div class="col-md-10">
+                        <div id="patientInfo"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical History with Tabs -->
+            <div class="patient-card">
+                <div class="section-title">
+                    <i class="fas fa-file-medical text-info"></i>
+                    Lịch sử khám bệnh
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="row mb-4" id="medicalStats" style="display: none;">
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="stat-icon">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalEncounters">0</div>
+                                <div class="stat-label">Lượt khám</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <div class="stat-icon">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalLabTests">0</div>
+                                <div class="stat-label">Xét nghiệm</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <div class="stat-icon">
+                                <i class="fas fa-x-ray"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalImagingTests">0</div>
+                                <div class="stat-label">Chẩn đoán hình ảnh</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <div class="stat-icon">
+                                <i class="fas fa-pills"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalTreatments">0</div>
+                                <div class="stat-label">Điều trị</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs mb-3" id="medicalHistoryTabs" role="tablist" style="display: none;">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="encounters-tab" data-bs-toggle="tab" data-bs-target="#encounters" type="button" role="tab">
+                            <i class="fas fa-user-md me-1"></i> Lượt khám
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="lab-results-tab" data-bs-toggle="tab" data-bs-target="#lab-results" type="button" role="tab">
+                            <i class="fas fa-vial me-1"></i> Kết quả xét nghiệm
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="imaging-results-tab" data-bs-toggle="tab" data-bs-target="#imaging-results" type="button" role="tab">
+                            <i class="fas fa-x-ray me-1"></i> Kết quả chẩn đoán hình ảnh
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="treatments-tab" data-bs-toggle="tab" data-bs-target="#treatments" type="button" role="tab">
+                            <i class="fas fa-pills me-1"></i> Liệu trình điều trị
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="medicalHistoryTabContent">
+                    <!-- Encounters Tab -->
+                    <div class="tab-pane fade show active" id="encounters" role="tabpanel">
+                        <div id="encountersContent">
+                            <div class="loading-spinner">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                <span class="ms-2">Đang tải lịch sử khám bệnh...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lab Results Tab -->
+                    <div class="tab-pane fade" id="lab-results" role="tabpanel">
+                        <div id="labResultsContent">
+                            <div class="loading-spinner">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                <span class="ms-2">Đang tải kết quả xét nghiệm...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Imaging Results Tab -->
+                    <div class="tab-pane fade" id="imaging-results" role="tabpanel">
+                        <div id="imagingResultsContent">
+                            <div class="loading-spinner">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                <span class="ms-2">Đang tải kết quả chẩn đoán hình ảnh...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Treatments Tab -->
+                    <div class="tab-pane fade" id="treatments" role="tabpanel">
+                        <div id="treatmentsContent">
+                            <div class="loading-spinner">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                <span class="ms-2">Đang tải liệu trình điều trị...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let currentPatient = null;
+
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token') || localStorage.getItem('healthysystem_token');
+            
+            console.log('Checking auth for patient lookup...');
+            console.log('Token found:', !!token);
+            
+            if (!token) {
+                console.log('No token found, redirecting to index');
+                window.location.href = 'index.html';
+                return null;
+            }
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                console.log('Token payload:', payload);
+                
+                // Backend sử dụng claim dài, không phải 'role' đơn giản
+                const roleClaim = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+                const role = roleClaim || payload.role; // Fallback to simple 'role' if exists
+                
+                console.log('User role:', role);
+                
+                if (role !== 'doctor') {
+                    console.log('Not a doctor role, redirecting to index');
+                    alert('Chỉ bác sĩ mới có quyền truy cập trang này!');
+                    window.location.href = 'index.html';
+                    return null;
+                }
+                
+                console.log('Auth successful for doctor');
+                return token;
+            } catch (error) {
+                console.error('Invalid token:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('healthysystem_token');
+                window.location.href = 'index.html';
+                return null;
+            }
+        }
+
+        // Search patient
+        async function searchPatient() {
+            const token = checkAuth();
+            if (!token) return;
+
+            const searchType = document.getElementById('searchType').value;
+            const keyword = document.getElementById('searchKeyword').value.trim();
+
+            if (!keyword) {
+                alert('Vui lòng nhập từ khóa tìm kiếm');
+                return;
+            }
+
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const searchResults = document.getElementById('searchResults');
+            const patientDetails = document.getElementById('patientDetails');
+
+            loadingSpinner.style.display = 'block';
+            searchResults.innerHTML = '';
+            patientDetails.style.display = 'none';
+
+            try {
+                // Call API to search patients
+                // Backend exposes: GET /api/patients/search?searchTerm=... and GET /api/patients/{patientId}
+                let endpoint = '';
+                if (searchType === 'id') {
+                    // search by numeric patient id (or public id if numeric not provided)
+                    endpoint = `${API_URL}/patients/${encodeURIComponent(keyword)}`;
+                } else {
+                    endpoint = `${API_URL}/patients/search?searchTerm=${encodeURIComponent(keyword)}`;
+                }
+
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Tìm kiếm thất bại');
+                }
+
+                const result = await response.json();
+                // PatientsController returns { count, patients } for search
+                const patients = result.patients || result.data || [];
+
+                loadingSpinner.style.display = 'none';
+
+                if (patients.length === 0) {
+                    searchResults.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-user-slash"></i>
+                            <h5>Không tìm thấy bệnh nhân</h5>
+                            <p>Vui lòng thử lại với từ khóa khác</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Display search results
+                searchResults.innerHTML = `
+                    <div class="search-card">
+                        <h5 class="mb-3">Kết quả tìm kiếm (${patients.length} bệnh nhân)</h5>
+                        <div class="row">
+                            ${patients.map(patient => `
+                                <div class="col-md-6 mb-3">
+                                    <div class="patient-card" style="cursor: pointer;" onclick="viewPatientDetails(${patient.id})">
+                                        <div class="d-flex align-items-center">
+                                            <div class="patient-avatar me-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                                ${getInitials(patient.firstName, patient.lastName)}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">${patient.lastName} ${patient.firstName}</h6>
+                                                <small class="text-muted d-block">
+                                                    <i class="fas fa-envelope me-1"></i>${patient.email}
+                                                </small>
+                                                <small class="text-muted d-block">
+                                                    <i class="fas fa-phone me-1"></i>${patient.phone || 'Chưa có'}
+                                                </small>
+                                            </div>
+                                            <i class="fas fa-chevron-right text-muted"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error searching patients:', error);
+                loadingSpinner.style.display = 'none';
+                searchResults.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                        <h5>Có lỗi xảy ra</h5>
+                        <p>Vui lòng thử lại sau</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Get initials for avatar
+        function getInitials(firstName, lastName) {
+            const first = firstName ? firstName.charAt(0).toUpperCase() : '';
+            const last = lastName ? lastName.charAt(0).toUpperCase() : '';
+            return first + last || 'BN';
+        }
+
+        // View patient details
+        async function viewPatientDetails(patientId) {
+            const token = checkAuth();
+            if (!token) return;
+
+            currentPatient = patientId;
+            
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('patientDetails').style.display = 'block';
+
+            // Load patient info
+            await loadPatientInfo(patientId, token);
+            
+            // Load comprehensive medical history
+            await loadMedicalHistory(patientId, token);
+        }
+
+        // Load patient info
+        async function loadPatientInfo(patientId, token) {
+            try {
+                const response = await fetch(`${API_URL}/patients/${patientId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load patient info');
+
+                // Backend trả về object trực tiếp, không có wrapper .data
+                const patient = await response.json();
+
+                document.getElementById('patientAvatar').textContent = getInitials(patient.firstName, patient.lastName);
+                
+                document.getElementById('patientInfo').innerHTML = `
+                    <div class="info-row">
+                        <div class="info-label">Họ và tên:</div>
+                        <div class="info-value"><strong>${patient.fullName || patient.lastName + ' ' + patient.firstName}</strong></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Email:</div>
+                        <div class="info-value">${patient.email}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Số điện thoại:</div>
+                        <div class="info-value">${patient.phone || 'Chưa cập nhật'}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Ngày sinh:</div>
+                        <div class="info-value">${patient.dateOfBirth ? new Date(patient.dateOfBirth).toLocaleDateString('vi-VN') : 'Chưa cập nhật'}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Giới tính:</div>
+                        <div class="info-value">${patient.gender === 'M' ? 'Nam' : patient.gender === 'F' ? 'Nữ' : 'Khác'}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Địa chỉ:</div>
+                        <div class="info-value">${patient.profile?.address || 'Chưa cập nhật'}</div>
+                    </div>
+                    ${patient.profile?.allergies ? `
+                    <div class="info-row">
+                        <div class="info-label">Dị ứng:</div>
+                        <div class="info-value text-danger"><i class="fas fa-exclamation-triangle me-1"></i>${patient.profile.allergies}</div>
+                    </div>
+                    ` : ''}
+                    ${patient.profile?.chronicConditions ? `
+                    <div class="info-row">
+                        <div class="info-label">Bệnh mãn tính:</div>
+                        <div class="info-value text-warning"><i class="fas fa-heartbeat me-1"></i>${patient.profile.chronicConditions}</div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                return patient;
+            } catch (error) {
+                console.error('Error loading patient info:', error);
+                document.getElementById('patientInfo').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Không thể tải thông tin bệnh nhân
+                    </div>
+                `;
+                return null;
+            }
+        }
+
+        // Load comprehensive medical history
+        async function loadMedicalHistory(patientId, token) {
+            try {
+                // Call the comprehensive medical history API
+                const response = await fetch(`${API_URL}/medicalhistory/${patientId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load medical history');
+
+                const result = await response.json();
+                const history = result.data || result;
+                
+                // Show stats and tabs
+                document.getElementById('medicalStats').style.display = 'flex';
+                document.getElementById('medicalHistoryTabs').style.display = 'flex';
+
+                // Update statistics
+                const stats = history.Statistics || history.statistics;
+                document.getElementById('totalEncounters').textContent = stats.TotalEncounters || stats.totalEncounters || 0;
+                document.getElementById('totalLabTests').textContent = stats.TotalLabTests || stats.totalLabTests || 0;
+                document.getElementById('totalImagingTests').textContent = stats.TotalImagingTests || stats.totalImagingTests || 0;
+                document.getElementById('totalTreatments').textContent = `${stats.ActiveTreatments || stats.activeTreatments || 0}/${stats.CompletedTreatments || stats.completedTreatments || 0}`;
+
+                // Display encounters (timeline view)
+                displayEncounters(history.Encounters || history.encounters);
+
+                // Display lab results (from encounters)
+                displayLabResults(history.Encounters || history.encounters);
+
+                // Display imaging results (from encounters)
+                displayImagingResults(history.Encounters || history.encounters);
+
+                // Display treatments from database
+                displayTreatmentsTab(history.Treatments || history.treatments);
+
+            } catch (error) {
+                console.error('Error loading medical history:', error);
+                document.getElementById('encountersContent').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Không thể tải lịch sử khám bệnh
+                    </div>
+                `;
+            }
+        }
+
+        // Display encounters in timeline format
+        function displayEncounters(encounters) {
+            const content = document.getElementById('encountersContent');
+            
+            if (!encounters || encounters.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-md"></i>
+                        <h5>Chưa có lịch sử khám bệnh</h5>
+                        <p>Bệnh nhân chưa có lượt khám nào</p>
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = encounters.map((encounter, index) => `
+                <div class="timeline-item">
+                    <div class="timeline-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            <i class="fas fa-calendar me-1"></i>
+                            ${new Date(encounter.encounterDate).toLocaleDateString('vi-VN')} 
+                            ${new Date(encounter.encounterDate).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}
+                        </div>
+                        <h6 class="timeline-title">${encounter.encounterType === 'consultation' ? 'Tư vấn' : encounter.encounterType === 'follow-up' ? 'Tái khám' : 'Khẩn cấp'}</h6>
+                        <div class="timeline-doctor">
+                            <i class="fas fa-user-md me-1"></i>
+                            Bác sĩ: ${encounter.doctorName}
+                        </div>
+                        
+                        ${encounter.chiefComplaint ? `
+                            <div class="mb-2">
+                                <strong>Lý do khám:</strong>
+                                <p class="mb-1 text-muted">${encounter.chiefComplaint}</p>
+                            </div>
+                        ` : ''}
+
+                        ${encounter.diagnosis ? `
+                            <div class="mb-2">
+                                <strong>Chẩn đoán:</strong>
+                                <p class="mb-1 text-muted">${encounter.diagnosis}</p>
+                            </div>
+                        ` : ''}
+
+                        ${encounter.labRequests && encounter.labRequests.length > 0 ? `
+                            <div class="mb-2">
+                                <strong>Xét nghiệm:</strong>
+                                <div class="mt-1">
+                                    ${encounter.labRequests.map(lab => `
+                                        <span class="result-badge ${lab.hasResults ? 'result-normal' : 'result-pending'}">
+                                            <i class="fas fa-${lab.hasResults ? 'check' : 'clock'} me-1"></i>
+                                            ${lab.testName}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${encounter.imagingRequests && encounter.imagingRequests.length > 0 ? `
+                            <div class="mb-2">
+                                <strong>Chẩn đoán hình ảnh:</strong>
+                                <div class="mt-1">
+                                    ${encounter.imagingRequests.map(img => `
+                                        <span class="result-badge ${img.hasResults ? 'result-normal' : 'result-pending'}">
+                                            <i class="fas fa-${img.hasResults ? 'check' : 'clock'} me-1"></i>
+                                            ${img.imagingType}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${encounter.prescriptions && encounter.prescriptions.length > 0 ? `
+                            <div class="mb-2">
+                                <strong>Đơn thuốc:</strong>
+                                <div class="mt-1">
+                                    ${encounter.prescriptions.map(presc => `
+                                        <div class="medication-item">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <strong>${presc.medicineName}</strong>
+                                                    <div class="text-muted small">
+                                                        ${presc.dosage} - ${presc.frequency}
+                                                        ${presc.durationDays ? ` - ${presc.durationDays} ngày` : ''}
+                                                    </div>
+                                                    ${presc.instructions ? `<div class="text-muted small mt-1">${presc.instructions}</div>` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${encounter.notes ? `
+                            <div class="mb-2">
+                                <strong>Ghi chú:</strong>
+                                <p class="mb-0 text-muted small">${encounter.notes}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Display lab results (extracted from encounters)
+        function displayLabResults(encounters) {
+            const content = document.getElementById('labResultsContent');
+            
+            // Extract all lab requests with results from encounters
+            const labData = [];
+            if (encounters && encounters.length > 0) {
+                encounters.forEach(encounter => {
+                    if (encounter.LabRequests && encounter.LabRequests.length > 0) {
+                        encounter.LabRequests.forEach(labReq => {
+                            labData.push({
+                                encounterDate: encounter.EncounterDate || encounter.encounterDate,
+                                testName: labReq.TestName || labReq.testName,
+                                hasResults: labReq.HasResults || labReq.hasResults,
+                                results: labReq.Results || labReq.results || [],
+                                status: (labReq.HasResults || labReq.hasResults) ? 'completed' : 'pending',
+                                requestDate: labReq.RequestedAt || labReq.requestedAt
+                            });
+                        });
+                    }
+                });
+            }
+            
+            if (labData.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-vial"></i>
+                        <h5>Chưa có kết quả xét nghiệm</h5>
+                        <p>Bệnh nhân chưa có xét nghiệm nào</p>
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = labData.map(lab => `
+                <div class="timeline-item">
+                    <div class="timeline-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            <i class="fas fa-calendar me-1"></i>
+                            ${new Date(lab.requestDate || lab.encounterDate).toLocaleDateString('vi-VN')}
+                        </div>
+                        <h6 class="timeline-title">${lab.testName}</h6>
+                        
+                        <span class="result-badge ${lab.status === 'completed' ? 'result-normal' : 'result-pending'}">
+                            ${lab.status === 'completed' ? 'Hoàn thành' : 'Chờ kết quả'}
+                        </span>
+
+                        ${lab.hasResults && lab.results && lab.results.length > 0 ? `
+                            <div class="mt-3">
+                                ${lab.results.map(result => `
+                                    <div class="test-result-item ${result.IsAbnormal || result.isAbnormal ? 'abnormal' : ''}">
+                                        <div>
+                                            <strong>${result.ParameterName || result.parameterName}</strong>
+                                            <div class="text-muted small">${result.NormalRange || result.normalRange || 'N/A'}</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <strong class="${result.IsAbnormal || result.isAbnormal ? 'text-warning' : 'text-success'}">
+                                                ${result.Value || result.value} ${result.Unit || result.unit || ''}
+                                            </strong>
+                                            ${result.IsAbnormal || result.isAbnormal ? '<i class="fas fa-exclamation-triangle text-warning ms-1"></i>' : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p class="text-muted mt-2">Chưa có kết quả</p>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Display imaging results (extracted from encounters)
+        function displayImagingResults(encounters) {
+            const content = document.getElementById('imagingResultsContent');
+            
+            // Extract all imaging requests with results from encounters
+            const imagingData = [];
+            if (encounters && encounters.length > 0) {
+                encounters.forEach(encounter => {
+                    if (encounter.ImagingRequests && encounter.ImagingRequests.length > 0) {
+                        encounter.ImagingRequests.forEach(imgReq => {
+                            imagingData.push({
+                                encounterDate: encounter.EncounterDate || encounter.encounterDate,
+                                imagingType: imgReq.ImagingType || imgReq.imagingType,
+                                hasResults: imgReq.HasResults || imgReq.hasResults,
+                                results: imgReq.Results || imgReq.results || [],
+                                status: (imgReq.HasResults || imgReq.hasResults) ? 'completed' : 'pending',
+                                requestDate: imgReq.RequestedAt || imgReq.requestedAt,
+                                bodyPart: imgReq.BodyPart || imgReq.bodyPart
+                            });
+                        });
+                    }
+                });
+            }
+            
+            if (imagingData.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-x-ray"></i>
+                        <h5>Chưa có kết quả chẩn đoán hình ảnh</h5>
+                        <p>Bệnh nhân chưa có chẩn đoán hình ảnh nào</p>
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = imagingData.map(img => {
+                const result = img.results && img.results.length > 0 ? img.results[0] : null;
+                return `
+                <div class="timeline-item">
+                    <div class="timeline-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                        <i class="fas fa-x-ray"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            <i class="fas fa-calendar me-1"></i>
+                            ${new Date(img.requestDate || img.encounterDate).toLocaleDateString('vi-VN')}
+                        </div>
+                        <h6 class="timeline-title">${img.imagingType}</h6>
+                        
+                        <span class="result-badge ${img.status === 'completed' ? 'result-normal' : 'result-pending'}">
+                            ${img.status === 'completed' ? 'Hoàn thành' : 'Chờ kết quả'}
+                        </span>
+
+                        ${img.bodyPart ? `
+                            <div class="mt-2">
+                                <strong>Bộ phận:</strong> ${img.bodyPart}
+                            </div>
+                        ` : ''}
+
+                        ${result && (result.Findings || result.findings) ? `
+                            <div class="mt-2">
+                                <strong>Kết quả:</strong>
+                                <p class="mb-1 text-muted">${result.Findings || result.findings}</p>
+                            </div>
+                        ` : img.hasResults ? '<p class="text-muted mt-2">Đã có kết quả</p>' : '<p class="text-muted mt-2">Chưa có kết quả</p>'}
+
+                        ${result && (result.Impression || result.impression) ? `
+                            <div class="mt-2 p-2 bg-light rounded">
+                                <strong>Kết luận:</strong>
+                                <p class="mb-0 small">${result.Impression || result.impression}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // Display treatments in tab (from database treatments table)
+        function displayTreatmentsTab(treatments) {
+            const content = document.getElementById('treatmentsContent');
+            
+            if (!treatments || treatments.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-pills"></i>
+                        <h5>Chưa có liệu trình điều trị</h5>
+                        <p>Bệnh nhân chưa có liệu trình điều trị nào</p>
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = treatments.map(treatment => {
+                // Handle both camelCase and PascalCase from API
+                const id = treatment.Id || treatment.id;
+                const name = treatment.Name || treatment.name;
+                const doctorName = treatment.DoctorName || treatment.doctorName;
+                const diagnosis = treatment.Diagnosis || treatment.diagnosis;
+                const description = treatment.Description || treatment.description;
+                const startDate = treatment.StartDate || treatment.startDate;
+                const endDate = treatment.EndDate || treatment.endDate;
+                const status = treatment.Status || treatment.status;
+                const progress = treatment.Progress || treatment.progress || 0;
+                const outcome = treatment.Outcome || treatment.outcome;
+                const itemsCount = treatment.ItemsCount || treatment.itemsCount || 0;
+                
+                return `
+                <div class="timeline-item">
+                    <div class="timeline-icon" style="background: ${status === 'active' ? 'linear-gradient(135deg, #43e97b, #38f9d7)' : 'linear-gradient(135deg, #8c8c8c, #b8b8b8)'};">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="timeline-title mb-1">${name}</h6>
+                                <small class="text-muted">
+                                    ${doctorName ? `<i class="fas fa-user-md me-1"></i>BS. ${doctorName}` : ''}
+                                </small>
+                                ${diagnosis ? `<div class="mt-1"><small class="text-muted"><strong>Chẩn đoán:</strong> ${diagnosis}</small></div>` : ''}
+                            </div>
+                            <span class="badge-status ${status === 'active' ? 'badge-active' : 'badge-completed'}">
+                                ${status === 'active' ? 'Đang điều trị' : status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}
+                            </span>
+                        </div>
+
+                        ${description ? `
+                            <div class="mb-2 p-2 bg-light rounded">
+                                <small>${description}</small>
+                            </div>
+                        ` : ''}
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                ${new Date(startDate).toLocaleDateString('vi-VN')} 
+                                ${endDate ? '- ' + new Date(endDate).toLocaleDateString('vi-VN') : '(Đang điều trị)'}
+                            </small>
+                            <small><strong>${progress}%</strong></small>
+                        </div>
+
+                        <div class="progress-bar-custom">
+                            <div class="progress-bar-fill" style="width: ${progress}%; background: ${status === 'active' ? 'linear-gradient(90deg, #43e97b, #38f9d7)' : 'linear-gradient(90deg, #8c8c8c, #b8b8b8)'};"></div>
+                        </div>
+
+                        ${itemsCount > 0 ? `
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-list me-1"></i>
+                                    ${itemsCount} thủ thuật/dịch vụ
+                                </small>
+                            </div>
+                        ` : ''}
+
+                        ${outcome ? `
+                            <p class="mt-2 mb-0 text-success small">
+                                <i class="fas fa-check-circle me-1"></i><strong>Kết quả:</strong> ${outcome}
+                            </p>
+                        ` : ''}
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // Display appointments history (legacy - không còn dùng)
+        function displayAppointmentsHistory(appointments) {
+            // This function is deprecated - using Medical History API instead
+        }
+
+        // Load treatments (legacy - không còn dùng)
+        async function loadTreatments(patientId, token) {
+            // This function is deprecated - using Medical History API instead
+        }
+
+        // Enter key to search
+        document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchPatient();
+            }
+        });
+
+        // Check auth on load
+        checkAuth();
+    </script>
+</body>
+</html>
